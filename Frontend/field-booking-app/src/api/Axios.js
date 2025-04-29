@@ -4,8 +4,8 @@ const getAxiosInstance = () => {
   const token = localStorage.getItem('access_token');  
 
   const instance = axios.create({
-    baseURL: 'http://localhost:5109/api', 
-    timeout: 5000,
+    baseURL: 'https://bookingfieldbackend.onrender.com/api', 
+    timeout: 10000,
     headers: {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
