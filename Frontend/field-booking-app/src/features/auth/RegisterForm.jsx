@@ -11,7 +11,6 @@ export default function RegisterForm({ onRegister }) {
     const password = watch("password");
 
     const onSubmit = (data) => {
-        console.log("Dữ liệu đăng ký:", data);
         if (onRegister) onRegister(data);
     };
 

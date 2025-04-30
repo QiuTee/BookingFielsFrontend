@@ -8,7 +8,6 @@ export default function LoginForm({ onLogin }) {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log('Dữ liệu đăng nhập:', data);
     if (onLogin) onLogin(data);
   };
 
