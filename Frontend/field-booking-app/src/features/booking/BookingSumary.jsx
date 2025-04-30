@@ -58,13 +58,12 @@ export default function BookingSummary({ prevStep }) {
   const handleConfirmBooking = async () => {
     const Payload = {
       FieldName: selectionField,
-      Date: selectDate,
+      Date: new Date(selectDate).toISOString(),
       Slots: selectedCell.map(({ field, slot }) => ({
         SubField: field,
         Time: slot,
       })),
       UserName: userData.name,
-      Email: userData.email,
       Phone: userData.phone,
       Notes: userData.notes,
     };
@@ -158,11 +157,6 @@ export default function BookingSummary({ prevStep }) {
                 <span className="font-medium">{userData.name}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-gray-500" />
-                <span className="text-gray-500 min-w-[100px]">Email:</span>
-                <span className="font-medium">{userData.email}</span>
-              </div>
 
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-gray-500" />

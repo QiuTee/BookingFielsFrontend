@@ -1,18 +1,23 @@
 import RegisterForm from "../features/auth/RegisterForm";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {NotificationContext} from "../context/NotificationContext";
+import { useContext } from "react";
 
 
 
 export default function Register() {
     const { register } = useAuth();
     const navigate = useNavigate();
+    const { showNotification } = useContext(NotificationContext);
 
     const handleSubmit = async (info) => {
       try {
         await register(info);
         navigate("/login"); 
       } catch (error) {
+        const message = error?.response?.data?.message || "Đăng ký thất bại";
+        showNotification({ type: "error", message });
         console.error("Registration failed:", error);
       }
     };
