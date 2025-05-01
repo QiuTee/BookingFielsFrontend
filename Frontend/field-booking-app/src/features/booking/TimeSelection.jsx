@@ -7,7 +7,7 @@ import { NotificationContext } from "../../context/NotificationContext";
 import FormatDate from "../../hooks/FormatDate";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getBookedSlots } from "../../api/submission"; 
+import { getBookedSlots } from "../../api/submission";
 
 const timeSlots = [];
 for (let h = 6; h <= 22; h++) {
@@ -50,7 +50,6 @@ export default function ScheduleGrid({ nextStep }) {
 
   useEffect(() => {
     if (!selectedDate) return;
-
     const filterToday = selectedCell.filter(({ slot }) => !isPastTime(selectedDate, slot));
     setSelectedCell(filterToday);
   }, [selectedDate]);
@@ -89,7 +88,6 @@ export default function ScheduleGrid({ nextStep }) {
 
   const toggleCell = (field, slot) => {
     const isSelected = selectedCell.some((cell) => cell.field === field && cell.slot === slot);
-
     if (isSelected) {
       setSelectedCell((prev) => prev.filter((cell) => !(cell.field === field && cell.slot === slot)));
     } else {
@@ -109,7 +107,8 @@ export default function ScheduleGrid({ nextStep }) {
       <BookingLegend />
 
       <div className="overflow-auto">
-        <div className="flex items-end justify-between gap-4 mb-4">
+        {/* CHỈNH Ở ĐÂY: Responsive cho xem bảng giá */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4">
           <div className="flex flex-col">
             <label className="block text-sm font-medium text-gray-700 mb-1">Ngày</label>
             <DatePicker
@@ -121,10 +120,10 @@ export default function ScheduleGrid({ nextStep }) {
             />
           </div>
 
-          <div className="self-end">
+          <div className="text-center md:text-right">
             <a
               href="#"
-              className="text-blue-500 font-bold border-b border-blue-200 hover:text-blue-600 hover:border-blue-300 transition"
+              className="text-blue-500 font-bold border-b border-blue-200 hover:text-blue-600 hover:border-blue-300 transition inline-block"
               onClick={(e) => {
                 e.preventDefault();
                 setShowPricing(true);
@@ -198,8 +197,8 @@ export default function ScheduleGrid({ nextStep }) {
           ) : (
             <>
               <p className="text-sm text-gray-600">
-                Đã chọn: <strong>{selectedCell.length}</strong> khung giờ – {" "}
-                <strong>{(selectedCell.length * 30) / 60} giờ</strong> – Ngày: {" "}
+                Đã chọn: <strong>{selectedCell.length}</strong> khung giờ –{" "}
+                <strong>{(selectedCell.length * 30) / 60} giờ</strong> – Ngày:{" "}
                 <strong>
                   {selectedDate ? FormatDate(selectedDate.toISOString()) : "Chưa chọn ngày"}
                 </strong>
