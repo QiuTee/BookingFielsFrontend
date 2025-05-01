@@ -44,7 +44,7 @@ export default function BookingSummary({ prevStep }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    const date = new Date(dateString);
+    const date = new Date(dateString + "T00:00:00"); 
     return new Intl.DateTimeFormat("vi-VN", {
       weekday: "long",
       year: "numeric",
@@ -58,7 +58,7 @@ export default function BookingSummary({ prevStep }) {
   const handleConfirmBooking = async () => {
     const Payload = {
       FieldName: selectionField,
-      Date: new Date(selectDate).toISOString(),
+      Date: selectDate,
       Slots: selectedCell.map(({ field, slot }) => ({
         SubField: field,
         Time: slot,

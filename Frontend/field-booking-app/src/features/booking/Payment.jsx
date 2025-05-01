@@ -129,7 +129,7 @@ export default function Payment() {
           <h2 className="text-xl font-bold text-blue-700 mb-4">3. Thông tin đặt sân</h2>
           <div className="text-gray-700 space-y-1">
             <p><strong>Sân:</strong> {bookingInfo.fieldName}</p>
-            <p><strong>Ngày:</strong> {new Date(bookingInfo.date).toLocaleDateString('vi-VN')}</p>
+            <p><strong>Ngày:</strong> {new Date(bookingInfo.date + "T00:00:00").toLocaleDateString('vi-VN')}</p>
             <p className="mt-2 font-semibold text-blue-600">Khung giờ đã đặt:</p>
             <SelectedSlotsSummary selectedCell={bookingInfo.slots.map(s => ({ field: s.subField, slot: s.time }))} />
           </div>

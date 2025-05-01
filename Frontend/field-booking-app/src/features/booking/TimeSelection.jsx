@@ -31,7 +31,7 @@ export default function ScheduleGrid({ nextStep }) {
       if (!selectedDate || !bookingData.selectionField) return;
 
       try {
-        const dateStr = selectedDate.toISOString().split('T')[0];
+        const dateStr = selectedDate.toLocaleDateString("en-CA");
         const slots = await getBookedSlots(bookingData.selectionField, dateStr);
 
         const grouped = {};
@@ -79,7 +79,7 @@ export default function ScheduleGrid({ nextStep }) {
   const handleNextStep = () => {
     setBookingData((prev) => ({
       ...prev,
-      selectDate: selectedDate?.toISOString().split("T")[0],
+      selectDate: selectedDate?.toLocaleDateString("en-CA"),
       selectedCell: selectedCell,
     }));
     if (validateSubmit()) {

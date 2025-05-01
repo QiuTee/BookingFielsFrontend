@@ -47,11 +47,21 @@ export default function RegisterForm({ onRegister }) {
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
                 <input
-                    {...register("password", { required: "Vui lòng nhập mật khẩu" })}
+                    {...register("password", {
+                        required: "Vui lòng nhập mật khẩu",
+                        pattern: {
+                            value: /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                            message:
+                                "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, số và ký tự đặc biệt"
+                        }
+                    })}
                     type="password"
                     placeholder="••••••••"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <p className="text-sm text-gray-500 mt-1">
+                    Mật khẩu phải có ít nhất 8 ký tự, chứa ít nhất 1 chữ hoa, 1 số và 1 ký tự đặc biệt.
+                </p>
                 {errors.password && (
                     <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
                 )}

@@ -20,7 +20,7 @@ export const registerUser = async (info) => {
     const axiosInstance = getAxiosInstance(); 
     const response = await axiosInstance.post('/auth/register', info);
     const { token } = response.data;
-
+    
     localStorage.setItem('access_token', token);
 
     return response.data;
@@ -105,7 +105,11 @@ export const getBookedSlots = async (fieldName, date) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Lấy khung giờ đã đặt thất bại:", error);
+    
+    if (error.response?.status === 500) {
+      console.warn("Không có sân nào được đặt.");
+      return [];
+    }
     throw error;
   }
 };

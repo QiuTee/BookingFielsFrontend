@@ -16,6 +16,7 @@ export default function Register() {
         await register(info);
         navigate("/login"); 
       } catch (error) {
+
         const message = error?.response?.data?.message || "Đăng ký thất bại";
         showNotification({ type: "error", message });
         console.error("Registration failed:", error);
