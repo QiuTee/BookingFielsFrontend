@@ -14,9 +14,7 @@ const mockFieldData = [
           "/images/court-1.jpg",
           "/images/court-2.jpg",
           "/images/court-3.jpg",
-          "/images/court-4.jpg",
-          "/images/court-5.jpg",
-          "/images/court-6.jpg"
+
         ],
         services: [
           "Thuê sân theo giờ",
@@ -33,7 +31,7 @@ const mockFieldData = [
             comment: "Huấn luyện viên chuyên nghiệp, tôi đã học được nhiều kỹ thuật mới."
           }
         ],
-        subFields: ["Sân A1", "Sân A2", "Sân A3"], // từ fieldData
+        subFields: ["Sân A1", "Sân A2", "Sân A3"], 
         type: "sân bóng đá",
         price: 120000,
         is24h: true
