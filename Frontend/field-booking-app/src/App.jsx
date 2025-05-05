@@ -8,15 +8,18 @@ import BookingPage from './pages/Bookingpage';
 import RedirectIfAuthenticated from './auth/RedirectIfAuthenticated';
 import BookingHistory from './pages/BookingHistory'; 
 import Payment from './features/booking/Payment';
+import FieldDetailClientPage from './pages/FieldDetailClientPage';
 function App() {
   return (
     <Routes>
+      <Route path="/san/:fieldSlug" element={<FieldDetailClientPage />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/fields" element={<Fields />} />
         <Route path="/booking/:fieldId" element={<BookingPage />} />
         <Route path="/booking-history" element={<BookingHistory />} /> 
         <Route path="/payment/:bookingId" element={<Payment />} />
+
         <Route
           path="/login"
           element={
