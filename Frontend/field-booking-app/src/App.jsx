@@ -13,10 +13,10 @@ function App() {
   return (
     <Routes>
       <Route path="/san/:fieldSlug" element={<FieldDetailClientPage />} />
+      <Route path="/booking/:fieldId" element={<BookingPage />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/fields" element={<Fields />} />
-        <Route path="/booking/:fieldId" element={<BookingPage />} />
         <Route path="/booking-history" element={<BookingHistory />} /> 
         <Route path="/payment/:bookingId" element={<Payment />} />
 

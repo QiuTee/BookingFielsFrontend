@@ -5,9 +5,8 @@ import { motion } from "framer-motion"
 export default function TankLoading({ duration = 3000 }) {
   const [progress, setProgress] = useState(0)
 
-  // Kích thước thực tế
-  const trackWidth = 448 // max-w-md = 28rem = 448px
-  const tankWidth = 120  // chiều rộng SVG xe tank
+  const trackWidth = 448 
+  const tankWidth = 120  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,7 +24,6 @@ export default function TankLoading({ duration = 3000 }) {
 
   return (
     <div className="relative h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-black to-[#1a1a1a] overflow-hidden">
-      {/* Background sao vàng */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#8B0000] to-[#B22222] opacity-80">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <motion.div
@@ -43,9 +41,7 @@ export default function TankLoading({ duration = 3000 }) {
         </div>
       </div>
 
-      {/* Thanh progress + xe tank */}
       <div className="relative w-full max-w-md h-20 mt-6">
-        {/* Xe tank chạy trên thanh */}
         <motion.div
           className="absolute bottom-6 left-0"
           initial={{ x: 0 }}
@@ -66,7 +62,6 @@ export default function TankLoading({ duration = 3000 }) {
           </svg>
         </motion.div>
 
-        {/* Thanh loading */}
         <div className="absolute bottom-0 w-full h-2 bg-gray-700 rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-[#FFD700]"
@@ -77,7 +72,6 @@ export default function TankLoading({ duration = 3000 }) {
         </div>
       </div>
 
-      {/* Text loading */}
       <motion.p
         className="mt-4 text-white font-medium"
         initial={{ opacity: 0.5 }}
@@ -87,7 +81,6 @@ export default function TankLoading({ duration = 3000 }) {
         {progress < 100 ? `Loading... ${progress}%` : "Complete!"}
       </motion.p>
 
-      {/* Ghi chú kỷ niệm */}
       <div className="absolute bottom-8 text-center text-white/80">
         <p className="text-lg font-semibold">30/04/1975 - 30/04/2025</p>
         <p className="text-sm">50 Năm Thống Nhất</p>
