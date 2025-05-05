@@ -107,7 +107,6 @@
         <BookingLegend />
 
         <div className="overflow-auto">
-          {/* CHỈNH Ở ĐÂY: Responsive cho xem bảng giá */}
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-4">
             <div className="flex flex-col">
               <label className="block text-sm font-medium text-gray-700 mb-1">Ngày</label>
@@ -134,61 +133,72 @@
             </div>
           </div>
 
-          <div className="w-full overflow-x-auto">
+          <div className="w-full overflow-x-auto max-w-full">
             {showPricing && <PricingOverlay onClose={() => setShowPricing(false)} />}
-            <table className="table-auto border border-gray-300 min-w-[1100px]">
-              <thead className="bg-blue-100">
-                <tr>
-                  <th className="p-2 border border-gray-300 w-28">Tên sân</th>
-                  {timeSlots.map((slot) => (
-                    <th key={slot} className="p-2 border border-gray-300 text-xs">
-                      {slot}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {fieldLabels.map((field) => (
-                  <tr key={field}>
-                    <td className="p-2 border border-gray-200 font-semibold text-center bg-blue-50">
-                      {field}
-                    </td>
-                    {timeSlots.map((slot) => {
-                      const isUnavailable = unavailableFields.includes(field);
-                      const isBooked = bookedSlots[field]?.includes(slot);
-                      const isPast = selectedDate && isPastTime(selectedDate, slot);
-                      const isSelected = isCellSelected(field, slot);
-                      const isDisabled = isUnavailable || isBooked || isPast;
-                      let className = "cursor-pointer";
-
-                      if (isUnavailable) {
-                        className += " bg-gray-300 text-gray-600 cursor-not-allowed";
-                      } else if (isBooked) {
-                        className += " bg-red-200 text-red-800 cursor-not-allowed";
-                      } else if (isSelected) {
-                        className += " bg-green-200 text-green-800 border border-green-600";
-                      } else if (isPast) {
-                        className += " bg-gray-200 text-gray-400 cursor-not-allowed";
-                      } else {
-                        className += " bg-white hover:bg-blue-50 text-gray-700 border";
-                      }
-
-                      return (
-                        <td
-                          key={`${field}-${slot}`}
-                          className={`p-2 text-center text-xs ${className}`}
-                          onClick={() => !isDisabled && toggleCell(field, slot)}
-                        >
-                          {!isUnavailable && !isBooked && !isSelected ? "•" : ""}
-                          {isSelected ? "✔" : ""}
-                        </td>
-                      );
-                    })}
+            <div className="inline-block min-w-full align-middle">
+              <table className="table-auto border border-gray-300 w-full text-[10px] md:text-xs">
+                <thead className="bg-blue-100">
+                  <tr>
+                    <th className="p-2 border border-gray-300 w-24 text-center">Tên sân</th>
+                    {timeSlots.map((slot, i) => (
+                      <th
+                        key={slot}
+                        className={`p-1 md:p-2 border border-gray-300 text-center ${
+                          i > 20 ? "hidden sm:table-cell" : ""
+                        }`}
+                      >
+                        {slot}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {fieldLabels.map((field) => (
+                    <tr key={field}>
+                      <td className="p-1 md:p-2 border border-gray-200 font-semibold text-center bg-blue-50">
+                        {field}
+                      </td>
+                      {timeSlots.map((slot, i) => {
+                        const isUnavailable = unavailableFields.includes(field);
+                        const isBooked = bookedSlots[field]?.includes(slot);
+                        const isPast = selectedDate && isPastTime(selectedDate, slot);
+                        const isSelected = isCellSelected(field, slot);
+                        const isDisabled = isUnavailable || isBooked || isPast;
+
+                        let className = "cursor-pointer";
+
+                        if (isUnavailable) {
+                          className += " bg-gray-300 text-gray-600 cursor-not-allowed";
+                        } else if (isBooked) {
+                          className += " bg-red-200 text-red-800 cursor-not-allowed";
+                        } else if (isSelected) {
+                          className += " bg-green-200 text-green-800 border border-green-600";
+                        } else if (isPast) {
+                          className += " bg-gray-200 text-gray-400 cursor-not-allowed";
+                        } else {
+                          className += " bg-white hover:bg-blue-50 text-gray-700 border";
+                        }
+
+                        return (
+                          <td
+                            key={`${field}-${slot}`}
+                            className={`p-1 md:p-2 text-center ${className} ${
+                              i > 20 ? "hidden sm:table-cell" : ""
+                            }`}
+                            onClick={() => !isDisabled && toggleCell(field, slot)}
+                          >
+                            {!isUnavailable && !isBooked && !isSelected ? "•" : ""}
+                            {isSelected ? "✔" : ""}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
 
           <div className="mt-6 bg-white p-4 rounded-xl shadow max-w-2xl mx-auto text-center">
             <h3 className="text-lg font-semibold text-blue-700 mb-2">Tổng thời gian và chi phí</h3>
