@@ -118,8 +118,10 @@ export default function ScheduleGrid({ nextStep }) {
             placeholderText="Chọn ngày"
             className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
             withPortal
-            readOnly
+            onFocus={(e) => e.target.blur()} 
+            onClick={(e) => e.preventDefault()} 
           />
+
         </div>
 
 
