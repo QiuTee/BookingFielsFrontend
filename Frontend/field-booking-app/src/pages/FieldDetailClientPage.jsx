@@ -29,7 +29,7 @@ export default function FieldDetailClientPage() {
     }).finally(() => {
       setTimeout(() => {
         setLoading(false);
-      }, 5500);
+      }, 1600);
     });
   }, [fieldSlug]);
 
@@ -49,7 +49,7 @@ export default function FieldDetailClientPage() {
     <div className="flex flex-col min-h-screen">
       <div className="relative w-full h-64 md:h-80">
         <img
-          src={field.heroImage || field.image}
+          src={field.heroImage}
           alt="Pickleball court"
           className="w-full h-full object-cover brightness-75 absolute inset-0"
         />

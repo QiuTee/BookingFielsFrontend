@@ -1,6 +1,8 @@
 export default function PricingOverlay({ onClose }) {
-    return (
-      <div className="fixed inset-0 z-50 bg-[#77a8f0] text-white p-6 overflow-y-auto">
+  return (
+    <div className="fixed inset-0 z-[100] backdrop-blur-sm bg-black/40 flex items-center justify-center">
+      <div className="bg-[#77a8f0] text-white p-6 overflow-y-auto max-h-[90vh] w-[95%] sm:w-[600px] md:w-[700px] lg:w-[850px] xl:w-[950px] rounded-lg shadow-lg relative">
+
         <div className="flex justify-between items-center mb-4">
           <button
             onClick={onClose}
@@ -12,8 +14,7 @@ export default function PricingOverlay({ onClose }) {
             Xem sân và bảng giá
           </h1>
         </div>
-  
-        
+
         <div className="flex justify-center mb-6">
           <img
             src="/images/pricing-map.png"
@@ -21,12 +22,11 @@ export default function PricingOverlay({ onClose }) {
             className="w-full max-w-md rounded-lg shadow-xl border border-white"
           />
         </div>
-  
-       
+
         <p className="text-center font-semibold text-lg mb-6">
           LIÊN HỆ ĐẶT SÂN: <span className="text-yellow-300">0973.113.837</span>
         </p>
-  
+
         <h2 className="text-lg font-bold mb-2">Bảng giá sân</h2>
         <div className="overflow-x-auto rounded-lg border border-white">
           <table className="w-full text-sm text-left border-collapse">
@@ -63,10 +63,8 @@ export default function PricingOverlay({ onClose }) {
               </tr>
             </tbody>
           </table>
-          
         </div>
- 
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

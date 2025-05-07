@@ -15,9 +15,9 @@ export default function TankLoading({ duration = 3000 }) {
           clearInterval(interval)
           return 100
         }
-        return prev + 1
+        return prev + 2
       })
-    }, duration / 100)
+    }, duration / 200)
 
     return () => clearInterval(interval)
   }, [duration])

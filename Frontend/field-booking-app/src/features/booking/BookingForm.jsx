@@ -44,8 +44,7 @@ export default function BookingForm({prevStep , nextStep}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      showNotification({type:"error", message: "Vui lòng đăng nhập để đặt sân"});
-      return;
+      showNotification({type:"info", message: "Bạn đang đặt sân với tư cách khách."});
     }
     
     if (validateForm()) {
