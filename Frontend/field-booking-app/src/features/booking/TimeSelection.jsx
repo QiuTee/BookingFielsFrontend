@@ -113,15 +113,19 @@ export default function ScheduleGrid({ nextStep }) {
           <label className="block text-sm font-medium text-gray-700 mb-1">Ngày</label>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => {
-              setSelectedDate(date);
-              document.activeElement?.blur();
-            }}
+            onChange={(date) => setSelectedDate(date)}
             dateFormat="dd/MM/yyyy"
             placeholderText="Chọn ngày"
             className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
             withPortal
+            customInput={
+              <input
+                readOnly
+                className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
+              />
+            }
           />
+
         </div>
 
 
