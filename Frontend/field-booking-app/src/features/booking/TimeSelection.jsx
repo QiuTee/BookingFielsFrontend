@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import TopNotice from "../../common/TopNotice";
 import BookingLegend from "../../common/BookingLegend";
 import PricingOverlay from "../../components/PricingOverlay";
@@ -17,6 +17,31 @@ for (let h = 6; h <= 22; h++) {
 
 const fieldLabels = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"];
 const unavailableFields = ["Sân C"];
+
+// Component chống bàn phím mobile
+function CustomDatePicker({ selectedDate, setSelectedDate }) {
+  const datepickerRef = useRef(null);
+
+  return (
+    <div>
+      <div
+        onClick={() => datepickerRef.current.setOpen(true)}
+        className="px-4 py-2 border rounded-lg bg-white shadow text-gray-700 text-sm cursor-pointer"
+      >
+        {selectedDate ? selectedDate.toLocaleDateString("vi-VN") : "Chọn ngày"}
+      </div>
+      <DatePicker
+        ref={datepickerRef}
+        selected={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
+        dateFormat="dd/MM/yyyy"
+        withPortal
+        className="hidden" // ẩn input gốc
+        popperPlacement="bottom-start"
+      />
+    </div>
+  );
+}
 
 export default function ScheduleGrid({ nextStep }) {
   const [selectedCell, setSelectedCell] = useState([]);
@@ -50,11 +75,9 @@ export default function ScheduleGrid({ nextStep }) {
       setSelectedCell((prev) =>
         prev.filter(({ slot }) => !isPastTime(selectedDate, slot))
       );
-    }, 10000); 
-  
+    }, 10000);
     return () => clearInterval(interval);
   }, [selectedDate]);
-  
 
   const validateSubmit = () => {
     if (selectedCell.length === 0) {
@@ -111,25 +134,8 @@ export default function ScheduleGrid({ nextStep }) {
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6 px-4">
         <div className="flex flex-col relative z-50">
           <label className="block text-sm font-medium text-gray-700 mb-1">Ngày</label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            dateFormat="dd/MM/yyyy"
-            placeholderText="Chọn ngày"
-            withPortal
-            customInput={
-              <input
-                readOnly
-                onFocus={(e) => e.target.blur()} // ✨ Quan trọng
-                className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
-              />
-            }
-          />
-
-
+          <CustomDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         </div>
-
-
         <div className="text-center md:text-right">
           <a
             href="#"
