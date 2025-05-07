@@ -116,15 +116,16 @@ export default function ScheduleGrid({ nextStep }) {
             onChange={(date) => setSelectedDate(date)}
             dateFormat="dd/MM/yyyy"
             placeholderText="Chọn ngày"
-            className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
             withPortal
             customInput={
               <input
                 readOnly
+                onFocus={(e) => e.target.blur()} // ✨ Quan trọng
                 className="px-4 py-2 border rounded-lg focus:ring-blue-500 shadow relative z-50"
               />
             }
           />
+
 
         </div>
 
