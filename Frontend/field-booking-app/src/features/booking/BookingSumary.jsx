@@ -70,7 +70,9 @@ export default function BookingSummary({ prevStep }) {
 
     try {
       const res = await createBooking(Payload);
-
+      const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
+      history.push(res.bookingId);
+      localStorage.setItem("guestBookingHistory", JSON.stringify(history));
    
       showNotification({ type: "success", message: "Đặt sân thành công!" });
 

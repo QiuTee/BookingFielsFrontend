@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { MapPin, Clock, Phone, Star, Home, Bell, User } from "lucide-react";
+import { MapPin, Clock, Phone, Star, Home, Bell, User, Bot } from "lucide-react";
 import TankLoading from "../components/loading/TankLoading";
 import { BookingContext } from "../context/BookingContext";
+import BottomNav from "../components/bottom_nav/BottomNav";
+import AccountPage from "../features/account/AccountPage";
 
 export default function FieldDetailClientPage() {
   const { fieldSlug } = useParams();
@@ -10,7 +12,7 @@ export default function FieldDetailClientPage() {
   const { setBookingData } = useContext(BookingContext);
 
   const [field, setField] = useState(null);
-  const [selectedTab, setSelectedTab] = useState("info");
+  const [selectedTab, setSelectedTab] = useState("home");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,9 +43,26 @@ export default function FieldDetailClientPage() {
     }));
     navigate(`/booking/${field.id}`);
   };
-
   if (!field) return <div className="text-center py-10 text-white">Đang tải sân...</div>;
   if (loading) return <TankLoading duration={5000} />;
+
+  if (selectedTab === "notifications") {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="p-4">Đây là phần Thông báo</div>
+        <BottomNav selectedTab={selectedTab} onSelectTab={setSelectedTab} />
+      </div>
+    );
+  }
+
+  if (selectedTab === "account") {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <AccountPage />
+        <BottomNav selectedTab={selectedTab} onSelectTab={setSelectedTab} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -86,24 +105,20 @@ export default function FieldDetailClientPage() {
       <div className="flex-1 bg-sky-100 text-gray-800">
         <div className="bg-sky-200 flex">
           <button
-            className={`flex-1 py-3 font-medium transition ${
-              selectedTab === "info" ? "bg-sky-300 text-sky-900" : "bg-sky-200 text-sky-700"
-            }`}
+            className={`flex-1 py-3 font-medium transition ${selectedTab === "info" ? "bg-sky-300 text-sky-900" : "bg-sky-200 text-sky-700"}`}
             onClick={() => setSelectedTab("info")}
           >
             Thông tin & Hình ảnh
           </button>
           <button
-            className={`flex-1 py-3 font-medium transition ${
-              selectedTab === "services" ? "bg-sky-300 text-sky-900" : "bg-sky-200 text-sky-700"
-            }`}
+            className={`flex-1 py-3 font-medium transition ${selectedTab === "services" ? "bg-sky-300 text-sky-900" : "bg-sky-200 text-sky-700"}`}
             onClick={() => setSelectedTab("services")}
           >
             Dịch vụ & Đánh giá
           </button>
         </div>
 
-        {selectedTab === "info" && (
+        {(selectedTab === "info" || selectedTab === "home") && (
           <div className="p-4 space-y-6">
             <div className="bg-white rounded-lg p-4 flex gap-3 shadow">
               <MapPin className="w-5 h-5 mt-0.5 text-sky-600" />
@@ -179,20 +194,7 @@ export default function FieldDetailClientPage() {
         )}
       </div>
 
-      <div className="bg-sky-300 text-sky-900 grid grid-cols-3 py-3">
-        <button onClick={() => navigate(`/san/${field.slug}`)} className="flex flex-col items-center justify-center">
-          <Home className="w-6 h-6" />
-          <span className="text-xs mt-1">Trang chủ</span>
-        </button>
-        <button onClick={() => navigate("/notifications")} className="flex flex-col items-center justify-center">
-          <Bell className="w-6 h-6" />
-          <span className="text-xs mt-1">Thông báo</span>
-        </button>
-        <button onClick={() => navigate("/account")} className="flex flex-col items-center justify-center">
-          <User className="w-6 h-6" />
-          <span className="text-xs mt-1">Tài khoản</span>
-        </button>
-      </div>
+      <BottomNav selectedTab={selectedTab} onSelectTab={setSelectedTab} />
     </div>
   );
 }

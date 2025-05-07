@@ -18,12 +18,11 @@ for (let h = 6; h <= 22; h++) {
 const fieldLabels = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"];
 const unavailableFields = ["Sân C"];
 
-// Component chống bàn phím mobile
 function CustomDatePicker({ selectedDate, setSelectedDate }) {
   const datepickerRef = useRef(null);
 
   return (
-    <div>
+    <div className="w-full sm:w-64">
       <div
         onClick={() => datepickerRef.current.setOpen(true)}
         className="px-4 py-2 border rounded-lg bg-white shadow text-gray-700 text-sm cursor-pointer"
@@ -36,14 +35,14 @@ function CustomDatePicker({ selectedDate, setSelectedDate }) {
         onChange={(date) => setSelectedDate(date)}
         dateFormat="dd/MM/yyyy"
         withPortal
-        className="hidden" // ẩn input gốc
+        className="hidden" 
         popperPlacement="bottom-start"
       />
     </div>
   );
 }
 
-export default function ScheduleGrid({ nextStep }) {
+export default function TimeSelection({ nextStep }) {
   const [selectedCell, setSelectedCell] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPricing, setShowPricing] = useState(false);
