@@ -62,12 +62,22 @@ export default function TimeSelection({ nextStep }) {
           grouped[subField].push(time);
         });
         setBookedSlots(grouped);
+  
+        // ✅ Filter lại selectedCell: loại bỏ những slot không còn hợp lệ
+        setSelectedCell((prev) =>
+          prev.filter(({ field, slot }) => {
+            const isBooked = grouped[field]?.includes(slot);
+            const isPast = isPastTime(selectedDate, slot);
+            return !isBooked && !isPast;
+          })
+        );
       } catch (error) {
         console.error("Lỗi khi lấy booked slots:", error);
       }
     }
     fetchBookedSlots();
   }, [selectedDate, bookingData.selectionField]);
+  
 
   useEffect(() => {
     const interval = setInterval(() => {

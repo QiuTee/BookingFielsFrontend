@@ -69,6 +69,7 @@ export default function BookingSummary({ prevStep }) {
     };
 
     try {
+      console.log("Payload:", selectDate);
       const res = await createBooking(Payload);
       const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
       history.push(res.bookingId);

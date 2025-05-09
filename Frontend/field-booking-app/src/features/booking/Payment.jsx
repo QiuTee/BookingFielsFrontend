@@ -32,7 +32,7 @@ export default function Payment() {
   }, [bookingId, navigate, showNotification]);
 
   if (!bookingInfo) {
-    return <div className="p-8 text-center text-blue-600 font-semibold">\u0110ang tải đơn hàng...</div>;
+    return <div className="p-8 text-center text-blue-600 font-semibold">Đang tải đơn hàng...</div>;
   }
 
   const orderTotal = bookingInfo.slots.length * 50000;
@@ -48,7 +48,7 @@ export default function Payment() {
       setProcessing(false);
       showNotification({ type: "success", message: "Thanh toán thành công!" });
       navigate("/booking-history");
-    }, 2000);
+     }, 2000);
   };
 
   return (
@@ -116,7 +116,7 @@ export default function Payment() {
             <div>
               <label className="block font-semibold text-gray-700 mb-2">Ảnh thẻ sinh viên (không bắt buộc)</label>
               <input
-                type="file"
+                type="file"          
                 accept="image/*"
                 onChange={(e) => setStudentCardImage(e.target.files[0])}
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -129,7 +129,7 @@ export default function Payment() {
           <h2 className="text-xl font-bold text-blue-700 mb-4">3. Thông tin đặt sân</h2>
           <div className="text-gray-700 space-y-1">
             <p><strong>Sân:</strong> {bookingInfo.fieldName}</p>
-            <p><strong>Ngày:</strong> {new Date(bookingInfo.date + "T00:00:00").toLocaleDateString('vi-VN')}</p>
+            <p><strong>Ngày:</strong> {new Date(bookingInfo.date).toLocaleDateString("vi-VN")}</p>
             <p className="mt-2 font-semibold text-blue-600">Khung giờ đã đặt:</p>
             <SelectedSlotsSummary selectedCell={bookingInfo.slots.map(s => ({ field: s.subField, slot: s.time }))} />
           </div>
@@ -153,7 +153,7 @@ export default function Payment() {
         <div className="text-lg font-bold text-green-700 mb-4">
           Tổng cộng: {orderTotal.toLocaleString('vi-VN')}đ
         </div>
-
+        
         <button
           onClick={handlePayment}
           disabled={processing}

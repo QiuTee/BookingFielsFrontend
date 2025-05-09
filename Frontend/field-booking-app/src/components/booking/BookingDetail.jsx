@@ -53,7 +53,7 @@ export default function BookingDetail({ booking, onClose }) {
         <div className="mt-6 flex gap-4">
           {booking.status === "pending" && (
             <button
-                onClick={() => navigate(`/payment/${booking.id}`)}
+              onClick={() => navigate(`/payment/${booking.id}`)}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg"
             >
               Thanh toán

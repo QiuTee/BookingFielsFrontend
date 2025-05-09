@@ -29,7 +29,7 @@ export default function BookingHistory() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate("/");
+      navigate(-1);
     }
   }, [isAuthenticated]);
 

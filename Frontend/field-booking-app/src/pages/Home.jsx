@@ -1,4 +1,18 @@
+import { useEffect , useState } from "react";
+import VnvarLoading from "../components/loading/VnvarLoading";
+
+
 export default function Home() {
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 2000); 
+
+      return () => clearTimeout(timer);
+    },[]);
+
+    if (loading) return <VnvarLoading />; 
     return (
       <div className="bg-white text-gray-800 ">
        

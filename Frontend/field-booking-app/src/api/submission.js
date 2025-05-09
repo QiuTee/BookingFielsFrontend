@@ -78,8 +78,10 @@ export const getUserBookings = async () => {
 
 export const getBookingById = async (id) => {
   try {
+    const token = localStorage.getItem('access_token');
     const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.get(`/booking/${id}`);
+    const endpoint = token ? `/booking/${id}` : `/booking/public/${id}`;
+    const response = await axiosInstance.get(endpoint);
     return response.data;
   } catch (error) {
     console.error("Lấy thông tin booking thất bại:", error);
@@ -114,3 +116,25 @@ export const getBookedSlots = async (fieldName, date) => {
   }
 };
 
+export async function getGuestBookings(){
+  const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
+  const axiosInstance = getAxiosInstance();
+  const validBookings = [];
+  const results = await Promise.all(
+    history.map(async (id) => {
+      try {
+        const booking = await axiosInstance.get(`/booking/public/${id}`);
+        if (booking.data && (booking.data.status === "confirmed" || booking.data.status === "pending")){
+          validBookings.push(booking.data);
+          return booking.data;
+        }
+        return null;
+      } catch (error) {
+        return null; 
+      }
+    })
+  );
+  const validIds = validBookings.map((booking) => booking.id);
+  localStorage.setItem("guestBookingHistory", JSON.stringify(validIds));
+  return results.filter(Boolean);
+};

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { use, useState , useEffect } from "react";
 import { CalendarDays, Clock, MapPin, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { getUserBookings , getGuestBookings } from "../../api/submission";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountPage() {
   const [tab, setTab] = useState("bookings");
   const { isAuthenticated, user } = useAuth();
-
+  const [bookings, setBookings] = useState([]);
   function getInitials(name) {
     return name
       .split(" ")
@@ -13,6 +15,28 @@ export default function AccountPage() {
       .join("")
       .toUpperCase();
   }
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      let bookings = [];
+      if (isAuthenticated) {
+        bookings = await getUserBookings(user.id);
+      }else {
+        bookings = await getGuestBookings();
+      }
+      const now = new Date();
+      const filtered = bookings.filter((booking) =>{
+        console.log("Booking status:", booking.status);
+        if(booking.status === "pending"){
+          const createdAt = new Date(booking.createdAt);
+          return (now - createdAt) / 30 * 60 * 1000 ; 
+        }
+        return true;
+      });
+      setBookings(filtered);
+    };
+    fetchBookings();
+  }, [isAuthenticated , user]);
 
   return (
     <div className="container mx-auto py-8 px-4 pb-16">
@@ -105,6 +129,8 @@ export default function AccountPage() {
 }
 
 function BookingCard({ booking }) {
+  const navigate = useNavigate();
+
   return (
     <div className="border rounded shadow overflow-hidden">
       <div className="h-40 bg-blue-100 relative">
@@ -123,7 +149,7 @@ function BookingCard({ booking }) {
             <div className="flex items-center text-gray-500">
               <CalendarDays className="h-4 w-4 mr-2" /> Ngày
             </div>
-            <div className="font-medium">{booking.date}</div>
+            <div className="font-medium">{new Date(booking.date).toLocaleDateString("vi-VN")}</div>
           </div>
           <div className="flex justify-between">
             <div className="flex items-center text-gray-500">
@@ -133,8 +159,18 @@ function BookingCard({ booking }) {
           </div>
         </div>
         <div className="flex justify-between mt-4">
-          <button className="text-blue-600 border border-blue-200 px-4 py-1 rounded">Hủy đặt sân</button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded">Chi tiết</button>
+          {booking.status === "pending" && (
+            <button 
+            onClick={() => navigate(`/payment/${booking.id}`)}
+            className="text-blue-600 border border-blue-200 hover:bg-blue-600 px-4 py-1 rounded transition">Thanh toán</button>
+
+          )}
+          {booking.status === "confirmed" && (
+            <button className="text-blue-600 border border-blue-200 px-4 py-1 rounded">Đã thanh toán</button>
+          )}
+          <button 
+          onClick={() => navigate(`/booking-detail/${booking.id}`)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded">Chi tiết</button>
         </div>
       </div>
     </div>
@@ -171,35 +207,6 @@ function HistoryBookingCard({ booking }) {
   );
 }
 
-const bookings = [
-  {
-    id: 1,
-    fieldName: "Sân Bóng Đá Mini Thống Nhất",
-    location: "123 Nguyễn Huệ, Quận 1, TP.HCM",
-    date: "15/05/2023",
-    time: "18:00 - 20:00",
-    status: "Đã xác nhận",
-    image: "/placeholder.svg?height=160&width=320",
-  },
-  {
-    id: 2,
-    fieldName: "Sân Bóng Đá Phú Nhuận",
-    location: "45 Phan Đình Phùng, Phú Nhuận, TP.HCM",
-    date: "20/05/2023",
-    time: "19:00 - 21:00",
-    status: "Chờ xác nhận",
-    image: "/placeholder.svg?height=160&width=320",
-  },
-  {
-    id: 3,
-    fieldName: "Sân Bóng Đá Rạch Miễu",
-    location: "78 Điện Biên Phủ, Bình Thạnh, TP.HCM",
-    date: "25/05/2023",
-    time: "17:30 - 19:30",
-    status: "Đã xác nhận",
-    image: "/placeholder.svg?height=160&width=320",
-  },
-];
 
 const historyBookings = [
   {
