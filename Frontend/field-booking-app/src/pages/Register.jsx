@@ -13,10 +13,10 @@ export default function Register() {
 
     const handleSubmit = async (info) => {
       try {
+        console.log("Registering user:", info);
         await register(info);
         navigate("/login"); 
       } catch (error) {
-
         const message = error?.response?.data?.message || "Đăng ký thất bại";
         showNotification({ type: "error", message });
         console.error("Registration failed:", error);

@@ -63,7 +63,6 @@ export default function TimeSelection({ nextStep }) {
         });
         setBookedSlots(grouped);
   
-        // ✅ Filter lại selectedCell: loại bỏ những slot không còn hợp lệ
         setSelectedCell((prev) =>
           prev.filter(({ field, slot }) => {
             const isBooked = grouped[field]?.includes(slot);

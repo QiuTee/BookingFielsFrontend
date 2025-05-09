@@ -5,6 +5,7 @@ import TankLoading from "../components/loading/TankLoading";
 import { BookingContext } from "../context/BookingContext";
 import BottomNav from "../components/bottom_nav/BottomNav";
 import AccountPage from "../features/account/AccountPage";
+import { getFieldBySlug } from "../api/submission"; 
 
 export default function FieldDetailClientPage() {
   const { fieldSlug } = useParams();
@@ -16,23 +17,20 @@ export default function FieldDetailClientPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      import("../data/mockFieldData"),
-      import("../data/FieldData"),
-    ]).then(([{ default: mockFieldData }, { default: fieldData }]) => {
-      const detail = mockFieldData.find((f) => f.slug === fieldSlug);
-      const base = fieldData.find((f) => f.id === detail?.id);
-      if (detail && base) {
-        setField({ ...base, ...detail });
-      } else {
+    const fetchField = async () => {
+      setLoading(true);
+      try {
+        const data = await getFieldBySlug(fieldSlug);
+        setField(data);
+      } catch (error) {
+        console.error("Không thể tải sân:", error);
         setField(null);
+      } finally {
+        setTimeout(() => setLoading(false), 1000);
       }
-    }).finally(() => {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1600);
-    });
+    };
+
+    fetchField();
   }, [fieldSlug]);
 
   const handleBookingClick = () => {
@@ -43,6 +41,7 @@ export default function FieldDetailClientPage() {
     }));
     navigate(`/booking/${field.id}`);
   };
+
   if (!field) return <div className="text-center py-10 text-white">Đang tải sân...</div>;
   if (loading) return <TankLoading duration={5000} />;
 
@@ -122,12 +121,12 @@ export default function FieldDetailClientPage() {
           <div className="p-4 space-y-6">
             <div className="bg-white rounded-lg p-4 flex gap-3 shadow">
               <MapPin className="w-5 h-5 mt-0.5 text-sky-600" />
-              <p className="text-sm">{field.address || field.location}</p>
+              <p className="text-sm">{field.location}</p>
             </div>
             <div className="bg-white rounded-lg p-4 flex gap-3 shadow">
               <Clock className="w-5 h-5 text-sky-600" />
               <p className="text-sm">
-                Giờ hoạt động: {field.openingHours || `${field.openTime} - ${field.closeTime}`}
+                Giờ hoạt động: {field.opentime} - {field.closetime}
               </p>
             </div>
             <div className="bg-white rounded-lg p-4 flex gap-3 shadow">
@@ -142,7 +141,7 @@ export default function FieldDetailClientPage() {
                   {field.images.map((img, i) => (
                     <div key={i} className="aspect-square rounded-lg overflow-hidden bg-sky-100 border">
                       <img
-                        src={img}
+                        src={img.url}
                         alt={`Ảnh ${i + 1}`}
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
@@ -163,7 +162,7 @@ export default function FieldDetailClientPage() {
                   {field.services.map((s, i) => (
                     <li key={i} className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
-                      <span>{s}</span>
+                      <span>{s.name}</span>
                     </li>
                   ))}
                 </ul>

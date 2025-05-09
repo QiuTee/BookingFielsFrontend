@@ -138,3 +138,15 @@ export async function getGuestBookings(){
   localStorage.setItem("guestBookingHistory", JSON.stringify(validIds));
   return results.filter(Boolean);
 };
+
+export async function getFieldBySlug(slug) {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.get(`/field/${slug}`);
+    return response.data;
+
+  }catch(error){
+    console.error("Lấy danh sách sân thất bại:", error);
+    throw error;
+  }
+}
