@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBookingById } from "../../api/submission";
+import { getBookingById, confirmedPayment } from "../../api/submission";
 import { NotificationContext } from "../../context/NotificationContext";
 import SelectedSlotsSummary from "../../components/SelectedSlotsSummary";
+import { uploadImageToSupabase } from "../../utils/upload";
+
 
 export default function Payment() {
   const { bookingId } = useParams();
@@ -12,8 +14,6 @@ export default function Payment() {
   const [processing, setProcessing] = useState(false);
 
   const [method, setMethod] = useState("card");
-  const [payer, setPayer] = useState({ name: "", email: "", phone: "", address: "" });
-
   const [paymentImage, setPaymentImage] = useState(null);
   const [studentCardImage, setStudentCardImage] = useState(null);
 
@@ -25,7 +25,7 @@ export default function Payment() {
       } catch (error) {
         console.error("Lỗi khi lấy booking:", error);
         showNotification({ type: "error", message: "Không lấy được đơn hàng" });
-        navigate("/booking-history");
+        navigate(-1);
       }
     };
     if (bookingId) fetchBooking();
@@ -37,18 +37,31 @@ export default function Payment() {
 
   const orderTotal = bookingInfo.slots.length * 50000;
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!paymentImage) {
       showNotification({ type: "error", message: "Vui lòng tải lên ảnh chuyển khoản để xác nhận!" });
       return;
     }
 
     setProcessing(true);
-    setTimeout(() => {
-      setProcessing(false);
+
+    try {
+      const paymentUrl = await uploadImageToSupabase(paymentImage, `booking_${bookingId}_payment`);
+      let studentUrl = null;
+      if (studentCardImage) {
+        studentUrl = await uploadImageToSupabase(studentCardImage, `booking_${bookingId}_student`);
+      }
+
+      await confirmedPayment(paymentUrl, studentUrl, bookingId);
+
       showNotification({ type: "success", message: "Thanh toán thành công!" });
       navigate("/booking-history");
-     }, 2000);
+    } catch (error) {
+      console.error("Xác nhận thanh toán thất bại:", error);
+      showNotification({ type: "error", message: "Xác nhận thanh toán thất bại!" });
+    } finally {
+      setProcessing(false);
+    }
   };
 
   return (
@@ -57,21 +70,19 @@ export default function Payment() {
         <div className="bg-white rounded-2xl shadow p-6">
           <h2 className="text-xl font-bold text-blue-700 mb-4">1. Chọn phương thức thanh toán</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button
-              className={`border rounded-lg p-4 text-center ${method === "card" ? "border-blue-600" : ""}`}
-              onClick={() => setMethod("card")}
-            >
-              Thẻ tín dụng / ghi nợ</button>
-            <button
-              className={`border rounded-lg p-4 text-center ${method === "bank" ? "border-blue-600" : ""}`}
-              onClick={() => setMethod("bank")}
-            >
-              Internet Banking</button>
-            <button
-              className={`border rounded-lg p-4 text-center ${method === "wallet" ? "border-blue-600" : ""}`}
-              onClick={() => setMethod("wallet")}
-            >
-              Ví điện tử</button>
+            {["card", "bank", "wallet"].map((type) => (
+              <button
+                key={type}
+                className={`border rounded-lg p-4 text-center ${method === type ? "border-blue-600" : ""}`}
+                onClick={() => setMethod(type)}
+              >
+                {{
+                  card: "Thẻ tín dụng / ghi nợ",
+                  bank: "Internet Banking",
+                  wallet: "Ví điện tử",
+                }[type]}
+              </button>
+            ))}
           </div>
 
           <div className="mt-6">
@@ -104,7 +115,9 @@ export default function Payment() {
           <h2 className="text-xl font-bold text-blue-700 mb-4">2. Tải hình ảnh xác nhận thanh toán</h2>
           <div className="space-y-4">
             <div>
-              <label className="block font-semibold text-gray-700 mb-2">Ảnh chuyển khoản <span className="text-red-500">*</span></label>
+              <label className="block font-semibold text-gray-700 mb-2">
+                Ảnh chuyển khoản <span className="text-red-500">*</span>
+              </label>
               <input
                 type="file"
                 accept="image/*"
@@ -116,7 +129,7 @@ export default function Payment() {
             <div>
               <label className="block font-semibold text-gray-700 mb-2">Ảnh thẻ sinh viên (không bắt buộc)</label>
               <input
-                type="file"          
+                type="file"
                 accept="image/*"
                 onChange={(e) => setStudentCardImage(e.target.files[0])}
                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -138,22 +151,12 @@ export default function Payment() {
 
       <div className="bg-white rounded-2xl shadow p-6 h-fit">
         <h2 className="text-xl font-bold text-blue-700 mb-4">Tóm tắt đơn hàng</h2>
-        <div className="text-sm font-semibold mb-2 text-gray-700">
-          Người đặt: {bookingInfo.userName}
-        </div>
-        <div className="text-sm font-semibold mb-2 text-gray-700">
-          Số điện thoại: {bookingInfo.phone}
-        </div>
-        <div className="text-sm font-semibold mb-2 text-gray-700">
-          Tạm tính: {orderTotal.toLocaleString('vi-VN')}đ
-        </div>
-        <div className="text-sm font-semibold mb-2 text-gray-700">
-          Giảm giá: 0đ
-        </div>
-        <div className="text-lg font-bold text-green-700 mb-4">
-          Tổng cộng: {orderTotal.toLocaleString('vi-VN')}đ
-        </div>
-        
+        <div className="text-sm font-semibold mb-2 text-gray-700">Người đặt: {bookingInfo.userName}</div>
+        <div className="text-sm font-semibold mb-2 text-gray-700">Số điện thoại: {bookingInfo.phone}</div>
+        <div className="text-sm font-semibold mb-2 text-gray-700">Tạm tính: {orderTotal.toLocaleString('vi-VN')}đ</div>
+        <div className="text-sm font-semibold mb-2 text-gray-700">Giảm giá: 0đ</div>
+        <div className="text-lg font-bold text-green-700 mb-4">Tổng cộng: {orderTotal.toLocaleString('vi-VN')}đ</div>
+
         <button
           onClick={handlePayment}
           disabled={processing}

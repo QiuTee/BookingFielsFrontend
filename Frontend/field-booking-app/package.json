@@ -10,10 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.7.4",
+    "framer-motion": "^12.10.5",
     "lucide-react": "^0.501.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",

@@ -149,4 +149,59 @@ export async function getFieldBySlug(slug) {
     console.error("Lấy danh sách sân thất bại:", error);
     throw error;
   }
-}
+};
+
+export async function confirmedPayment(paymentImageUrl , studentCardImageUrl ,bookingId) {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.put(`/booking/${bookingId}/confirm-payment`, {
+      paymentImageUrl,
+      studentCardImageUrl,
+      bookingId
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Xác nhận thanh toán thất bại:", error);
+    throw error;
+  }
+};
+
+export async function getBookingsForOwner(){
+  try { 
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.get('/booking/owner-bookings');
+    return response.data;
+  }
+  catch (error) {
+    console.error("Lấy danh sách booking cho owner thất bại:", error);
+    throw error;
+  }
+};
+
+export async function updateBookingStatus(bookingId, newStatus) {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.put(`/booking/${bookingId}/update-status`, { status: newStatus });
+    return response.data;
+  } catch (error) {
+    console.error("Cập nhật trạng thái booking thất bại:", error);
+    throw error;
+  }
+  
+};
+
+
+export const markBookingAsRead = async (bookingId) => {
+  try{
+    const axiosInstance = getAxiosInstance();
+    await axiosInstance.put(`/booking/${bookingId}/mark-as-read`);
+  }
+  catch (error) {
+    console.error("Đánh dấu booking là đã đọc thất bại:", error);
+    throw error;
+  }
+
+};
+
+
+

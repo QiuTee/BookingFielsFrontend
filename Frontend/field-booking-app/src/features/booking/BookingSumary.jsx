@@ -57,6 +57,7 @@ export default function BookingSummary({ prevStep }) {
 
   const handleConfirmBooking = async () => {
     const Payload = {
+      FieldId : bookingData.fieldId,
       FieldName: selectionField,
       Date: selectDate,
       Slots: selectedCell.map(({ field, slot }) => ({

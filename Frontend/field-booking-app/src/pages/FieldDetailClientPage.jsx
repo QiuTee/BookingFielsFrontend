@@ -38,6 +38,7 @@ export default function FieldDetailClientPage() {
     setBookingData((prev) => ({
       ...prev,
       selectionField: field.name,
+      fieldId: field.id,
     }));
     navigate(`/booking/${field.id}`);
   };

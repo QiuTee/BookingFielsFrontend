@@ -9,12 +9,14 @@ export function BookingProvider({ children }) {
         selectTime : null,
         selectionField : "chưa chọn sân",
         bookingField : [],
+        fieldId : null,
         userData : {
             name : "",
             email : "",
             phone : "",
             notes : "",
         },
+
     })
 
     return (
