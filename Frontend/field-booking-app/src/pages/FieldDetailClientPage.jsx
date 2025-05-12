@@ -102,7 +102,7 @@ export default function FieldDetailClientPage() {
         </div>
       </div>
 
-      <div className="flex-1 bg-sky-100 text-gray-800">
+      <div className="flex-1 bg-sky-100 text-gray-800 pb-20">
         <div className="bg-sky-200 flex">
           <button
             className={`flex-1 py-3 font-medium transition ${selectedTab === "info" ? "bg-sky-300 text-sky-900" : "bg-sky-200 text-sky-700"}`}
@@ -135,14 +135,14 @@ export default function FieldDetailClientPage() {
               <p className="text-sm">{field.phone}</p>
             </div>
 
-            {field.images?.length > 0 && (
+            {field.imageUrls?.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-4">Hình ảnh sân</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {field.images.map((img, i) => (
+                  {field.imageUrls.map((url, i) => (
                     <div key={i} className="aspect-square rounded-lg overflow-hidden bg-sky-100 border">
                       <img
-                        src={img.url}
+                        src={url}
                         alt={`Ảnh ${i + 1}`}
                         className="w-full h-full object-cover hover:scale-105 transition-transform"
                       />
