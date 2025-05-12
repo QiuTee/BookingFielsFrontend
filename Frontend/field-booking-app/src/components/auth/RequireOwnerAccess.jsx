@@ -11,7 +11,6 @@ export default function RequireOwnerAccess({ children }) {
     async function checkAccess() {
       try {
         const user = await getCurrentUser();
-        console.log("Current user:", user);
         if (user.role !== 'owner' && user.role !== 'admin') {
           setAuthorized(false);
           return;

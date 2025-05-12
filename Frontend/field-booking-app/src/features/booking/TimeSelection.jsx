@@ -57,25 +57,30 @@ export default function TimeSelection({ nextStep }) {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
         const slots = await getBookedSlots(bookingData.selectionField, dateStr);
         const grouped = {};
-        slots.forEach(({ subField, time }) => {
-          if (!grouped[subField]) grouped[subField] = [];
-          grouped[subField].push(time);
+        slots.forEach(({ subField, time, status }) => {
+          if (!grouped[subField]) grouped[subField] = {};
+          grouped[subField][time] = status;
         });
         setBookedSlots(grouped);
-  
-        setSelectedCell((prev) =>
-          prev.filter(({ field, slot }) => {
-            const isBooked = grouped[field]?.includes(slot);
-            const isPast = isPastTime(selectedDate, slot);
-            return !isBooked && !isPast;
-          })
-        );
-      } catch (error) {
-        console.error("Lỗi khi lấy booked slots:", error);
-      }
-    }
-    fetchBookedSlots();
-  }, [selectedDate, bookingData.selectionField]);
+                setBookedSlots(grouped);
+          
+                setSelectedCell((prev) =>
+                  prev.filter(({ field, slot }) => {
+                    const isBooked = grouped[field]?.includes(slot);
+                    const isPast = isPastTime(selectedDate, slot);
+                    return !isBooked && !isPast;
+                  })
+                );
+              } catch (error) {
+                console.error("Lỗi khi lấy booked slots:", error);
+              }
+            }
+            fetchBookedSlots();
+            const interval = setInterval(() => {
+              fetchBookedSlots();
+            }, 60000);
+            return () => clearInterval(interval);
+     }, [selectedDate, bookingData.selectionField]);
   
 
   useEffect(() => {
@@ -184,8 +189,11 @@ export default function TimeSelection({ nextStep }) {
                     {field}
                   </td>
                   {timeSlots.map((slot) => {
+                    const slotStatus = bookedSlots[field]?.[slot];
+                    const isPaid = slotStatus === "paid";
+                    const isConfirmed = slotStatus === "confirmed";
+                    const isBooked = isPaid || isConfirmed;
                     const isUnavailable = unavailableFields.includes(field);
-                    const isBooked = bookedSlots[field]?.includes(slot);
                     const isPast = selectedDate && isPastTime(selectedDate, slot);
                     const isSelected = isCellSelected(field, slot);
                     const isDisabled = isUnavailable || isBooked || isPast;
@@ -193,8 +201,10 @@ export default function TimeSelection({ nextStep }) {
                     let className = "cursor-pointer transition text-center px-2 py-1 text-xs ";
                     if (isUnavailable) {
                       className += "bg-gray-300 text-gray-600 cursor-not-allowed";
-                    } else if (isBooked) {
+                    } else if (isConfirmed) {
                       className += "bg-red-200 text-red-800 cursor-not-allowed";
+                    } else if (isPaid) {
+                      className += "bg-yellow-200 text-yellow-800 cursor-not-allowed";
                     } else if (isSelected) {
                       className += "bg-green-200 text-green-800 border border-green-600 font-bold";
                     } else if (isPast) {

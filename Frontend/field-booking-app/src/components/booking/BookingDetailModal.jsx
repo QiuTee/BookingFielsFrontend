@@ -24,6 +24,7 @@ export default function BookingDetailModal({ booking, onClose }) {
           <p><strong>Trạng thái:</strong> 
            <span className={`${statusMap[booking.status || "confirmed"].color}`}>{statusMap[booking.status || "confirmed"].label}</span> 
           </p>
+          <p><strong>Số điện thoại:</strong> {booking.phone}</p>
 
           {booking.paymentImageUrl && (
             <div className="mt-4">

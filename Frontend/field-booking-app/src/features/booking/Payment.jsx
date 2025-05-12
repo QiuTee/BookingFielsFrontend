@@ -25,7 +25,7 @@ export default function Payment() {
       } catch (error) {
         console.error("Lỗi khi lấy booking:", error);
         showNotification({ type: "error", message: "Không lấy được đơn hàng" });
-        navigate(-1);
+        navigate("/booking-history");
       }
     };
     if (bookingId) fetchBooking();
