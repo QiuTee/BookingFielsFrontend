@@ -132,7 +132,7 @@ export default function FieldDetailClientPage() {
             </div>
             <div className="bg-white rounded-lg p-4 flex gap-3 shadow">
               <Phone className="w-5 h-5 text-sky-600" />
-              <p className="text-sm">{field.phone}</p>
+              <a href={`tel:${field.phone}`} className="text-sm"><strong>{field.phone}</strong></a>
             </div>
 
             {field.imageUrls?.length > 0 && (

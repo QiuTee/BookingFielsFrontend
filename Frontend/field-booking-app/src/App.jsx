@@ -16,6 +16,7 @@ import DashboardHome from './pages/dashboard_owner/DashboardHome';
 // import ManageBookings from './pages/dashboard/ManageBookings';
 // import ManageFields from './pages/dashboard/ManageFields';
 // import Notifications from './pages/dashboard/Notifications';
+import NotFound from './components/404-page/NotFound';
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
         <Route path="fields" element={<ManageFields />} />
         <Route path="notifications" element={<Notifications />} /> */}
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
