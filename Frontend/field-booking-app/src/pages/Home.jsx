@@ -24,7 +24,7 @@ export default function Home() {
             VNDC giúp bạn tìm, đặt và quản lý sân  chỉ với vài cú nhấp. Không còn phải gọi điện từng sân để đặt chỗ!
           </p>
           <a
-            href="/fields" 
+            href="/san/san_bong_da_mini_chao_lua" 
             className="inline-block bg-blue-600 text-white text-lg px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             Đặt sân ngay
@@ -44,17 +44,7 @@ export default function Home() {
           ))}
         </section>
   
-        <section className="py-12 bg-blue-100 text-center">
-          <h2 className="text-2xl font-bold text-blue-700 mb-4">
-            Sẵn sàng để đặt sân đầu tiên của bạn?
-          </h2>
-          <a
-            href="/register"
-            className="inline-block bg-blue-600 text-white text-lg px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Đăng ký ngay
-          </a>
-        </section>
+        
       </div>
     );
   }

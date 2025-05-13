@@ -81,6 +81,7 @@ export default function DashboardHome() {
                         {subField}: {groupTimeRanges(times).join(", ")}
                       </p>
                     ))}
+                    <a href={`tel:${b.phone}`} className="text-sm text-gray-600">📞 <strong>{b.phone}</strong></a>
                   </div>
                   <span
                     className={`text-sm px-3 py-1 rounded-full font-medium ${statusMap[b.status || "confirmed"].color}`}
