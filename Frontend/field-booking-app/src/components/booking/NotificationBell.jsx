@@ -2,16 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { getBookingsForOwner ,markBookingAsRead } from "../../api/submission";
 import { Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
-
+import { useParams } from "react-router-dom";
 export default function NotificationBell({ onOpenBooking }) {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
   const bellRef = useRef();
+  const {slug} = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getBookingsForOwner();
+        const data = await getBookingsForOwner(slug);
         const unread = data.filter(b => b.status === "pending" && !b.isRead);
         setNotifications(unread);
       } catch (error) {

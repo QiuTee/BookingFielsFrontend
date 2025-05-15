@@ -13,7 +13,7 @@ import BookingDetailPage from './components/booking/BookingDetailPage';
 import RequireOwnerAccess from './components/auth/RequireOwnerAccess';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/dashboard_owner/DashboardHome';
-// import ManageBookings from './pages/dashboard/ManageBookings';
+import BookingManagement from './features/owner/BookingManagement';
 // import ManageFields from './pages/dashboard/ManageFields';
 // import Notifications from './pages/dashboard/Notifications';
 import NotFound from './components/404-page/NotFound';
@@ -56,10 +56,11 @@ function App() {
         
         }>
         <Route index element={<DashboardHome />} />
-        {/* <Route path="bookings" element={<ManageBookings />} />
-        <Route path="fields" element={<ManageFields />} />
-        <Route path="notifications" element={<Notifications />} /> */}
+        <Route path="bookings" element={<BookingManagement />} />
+        {/* <Route path="fields" element={<ManageFields />} />
+        <Route path="notifications" element={<Notifications />} /> */} 
       </Route>
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -166,10 +166,11 @@ export async function confirmedPayment(paymentImageUrl , studentCardImageUrl ,bo
   }
 };
 
-export async function getBookingsForOwner(){
+export async function getBookingsForOwner(slug){
+  if(!slug) return
   try { 
     const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.get('/booking/owner-bookings');
+    const response = await axiosInstance.get(`/booking/owner-bookings/${slug}`);
     return response.data;
   }
   catch (error) {

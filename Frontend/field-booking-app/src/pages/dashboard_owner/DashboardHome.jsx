@@ -4,24 +4,29 @@ import { groupTimeRanges } from "../../utils/groupTimeRanges";
 import { statusMap } from "../../constants/statusMap";
 import BookingDetailModal from "../../components/booking/BookingDetailModal";
 import { useSelectedBooking } from "../../context/SelectedBookingContext";
+import { useParams } from "react-router-dom";
 
 export default function DashboardHome() {
   const [bookings, setBookings] = useState([]);
   const { selectedBooking, setSelectedBooking } = useSelectedBooking();
+  const { slug } = useParams();
 
   useEffect(() => {
+    if (!slug) return;
+
     async function fetchBookings() {
       try {
-        const data = await getBookingsForOwner();
+        const data = await getBookingsForOwner(slug);
         setBookings(data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
     }
+
     fetchBookings();
-    const interval = setInterval(fetchBookings, 15000); 
-    return () => clearInterval(interval); 
-  }, []);
+    const interval = setInterval(fetchBookings, 15000);
+    return () => clearInterval(interval);
+  }, [slug]);
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
@@ -58,7 +63,7 @@ export default function DashboardHome() {
       <div className="bg-white rounded-lg p-4 shadow col-span-full">
         <h2 className="text-lg font-semibold text-blue-800 mb-4">Lịch đặt sân gần đây</h2>
         <div className="space-y-4">
-          {bookings.map((b) => {
+          {bookings.slice(0, 5).map((b) => {
             const groupedBySubField = b.slots?.reduce((acc, slot) => {
               acc[slot.subField] = acc[slot.subField] || [];
               acc[slot.subField].push(slot.time);
@@ -91,20 +96,30 @@ export default function DashboardHome() {
                 </div>
 
                 {(b.status === "paid" || b.status === "pending") && (
-                  <div className="flex gap-2 mt-2">
+                  <div className="mt-2 flex flex-col sm:flex-row sm:justify-start sm:items-center gap-2 sm:gap-3">
                     {b.status === "paid" && (
-                      <button
-                        onClick={() => handleStatusChange(b.id, "confirmed")}
-                        className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-                      >
-                        Xác nhận
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleStatusChange(b.id, "confirmed_paid")}
+                          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-sm"
+                        >
+                          ✅ Xác nhận – Thanh toán đủ
+                        </button>
+
+                        <button
+                          onClick={() => handleStatusChange(b.id, "confirmed_deposit")}
+                          className="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition text-sm"
+                        >
+                          💰 Xác nhận – Đặt cọc
+                        </button>
+                      </>
                     )}
+
                     <button
                       onClick={() => handleStatusChange(b.id, "canceled")}
-                      className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
+                      className="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition text-sm"
                     >
-                      Từ chối
+                      ❌ Từ chối
                     </button>
                   </div>
                 )}
@@ -118,6 +133,15 @@ export default function DashboardHome() {
               </div>
             );
           })}
+        </div>
+
+        <div className="mt-4 text-right">
+          <a
+            href={`/san/${slug}/owner/bookings`}
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Xem tất cả lịch sử đặt sân →
+          </a>
         </div>
       </div>
 

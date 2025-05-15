@@ -43,8 +43,8 @@ export default function FieldDetailClientPage() {
     navigate(`/booking/${field.id}`);
   };
 
-  if (!field) return <div className="text-center py-10 text-white">Đang tải sân...</div>;
   if (loading) return <TankLoading duration={5000} />;
+  if (!field) return <div className="text-center py-10 text-white">Đang tải sân...</div>;
 
   if (selectedTab === "notifications") {
     return (
