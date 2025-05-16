@@ -27,7 +27,7 @@ export default function AccountPage() {
       const now = new Date();
       const filtered = bookings.filter((booking) =>{
         console.log("Booking status:", booking.status);
-        if(booking.status === "pending"){
+        if(booking.status === "unpaid"){
           const createdAt = new Date(booking.createdAt);
           return (now - createdAt) / 30 * 60 * 1000 ; 
         }
@@ -159,7 +159,7 @@ function BookingCard({ booking }) {
           </div>
         </div>
         <div className="flex justify-between mt-4">
-          {booking.status === "pending" && (
+          {booking.status === "unpaid" && (
             <button 
             onClick={() => navigate(`/payment/${booking.id}`)}
             className="text-blue-600 border border-blue-200 hover:bg-blue-600 px-4 py-1 rounded transition">Thanh toán</button>

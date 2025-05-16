@@ -13,7 +13,7 @@ export default function NotificationBell({ onOpenBooking }) {
     const fetchData = async () => {
       try {
         const data = await getBookingsForOwner(slug);
-        const unread = data.filter(b => b.status === "pending" && !b.isRead);
+        const unread = data.filter(b => b.status === "unpaid" && !b.isRead);
         setNotifications(unread);
       } catch (error) {
         console.error("Lỗi khi lấy thông báo:", error);

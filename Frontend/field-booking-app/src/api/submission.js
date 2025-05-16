@@ -124,7 +124,7 @@ export async function getGuestBookings(){
     history.map(async (id) => {
       try {
         const booking = await axiosInstance.get(`/booking/public/${id}`);
-        if (booking.data && (booking.data.status === "confirmed" || booking.data.status === "pending")){
+        if (booking.data && (booking.data.status === "confirmed" || booking.data.status === "unpaid")){
           validBookings.push(booking.data);
           return booking.data;
         }

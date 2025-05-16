@@ -181,9 +181,9 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
         
       </div>
 
-      {["confirmed_paid", "confirmed_deposit", "paid", "pending"].includes(booking.status) && (
+      {["confirmed_paid", "confirmed_deposit", "paid", "unpaid"].includes(booking.status) && (
         <div className="bg-gray-50 px-4 py-3 border-t flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-          {(booking.status === "paid" || booking.status === "pending") && (
+          {(booking.status === "paid" || booking.status === "unpaid") && (
             <>
               {booking.status === "paid" && (
                 <>

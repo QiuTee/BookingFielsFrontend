@@ -95,7 +95,7 @@ export default function DashboardHome() {
                   </span>
                 </div>
 
-                {(b.status === "paid" || b.status === "pending") && (
+                {(b.status === "paid" || b.status === "unpaid") && (
                   <div className="mt-2 flex flex-col sm:flex-row sm:justify-start sm:items-center gap-2 sm:gap-3">
                     {b.status === "paid" && (
                       <>

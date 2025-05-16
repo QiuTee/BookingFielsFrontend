@@ -37,10 +37,10 @@ export default function BookingDetailPage() {
     
           <div className={`w-fit px-4 py-2 rounded-full font-semibold text-sm ${
             booking.status === "confirmed" ? "bg-green-100 text-green-700" :
-            booking.status === "pending" ? "bg-yellow-100 text-yellow-700" :
+            booking.status === "unpaid" ? "bg-yellow-100 text-yellow-700" :
             "bg-gray-100 text-gray-700"
           }`}>
-            Trạng thái: {booking.status === "confirmed" ? "Đã xác nhận" : booking.status === "pending" ? "Chờ xác nhận" : booking.status}
+            Trạng thái: {booking.status === "confirmed" ? "Đã xác nhận" : booking.status === "unpaid" ? "Chờ xác nhận" : booking.status}
           </div>
     
           <div className="bg-white p-4 rounded-xl shadow space-y-4">
