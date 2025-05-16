@@ -139,12 +139,17 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
     >
       <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="space-y-2">
             <div className="font-semibold text-blue-800 text-lg">{booking.userName}</div>
-            <div className="text-sm text-gray-600">{booking.fieldName}</div>
-            <div className="text-sm text-gray-600 flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              {new Date(booking.date).toLocaleDateString("vi-VN")}
+            <div className="flex flex-col gap-2">
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                {booking.fieldName}
+              </div>
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                {new Date(booking.date).toLocaleDateString("vi-VN")}
+              </div>
             </div>
           </div>
           <span
@@ -154,7 +159,7 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500 pt-2">
           <div className="flex items-center gap-1">
             <Phone className="h-4 w-4" />
             <strong>{booking.phone}</strong>
