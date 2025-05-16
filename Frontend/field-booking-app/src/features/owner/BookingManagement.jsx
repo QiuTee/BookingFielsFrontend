@@ -178,6 +178,7 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
             ));
           })()}
         </div>
+        
       </div>
 
       {["confirmed_paid", "confirmed_deposit", "paid", "pending"].includes(booking.status) && (
