@@ -1,5 +1,5 @@
 import { useState , useEffect } from "react";
-import { Calendar, Clock, CreditCard, Filter, Search, Phone } from "lucide-react";
+import { Calendar, Clock, CreditCard, Filter, Search, Phone, MapPin } from "lucide-react";
 import BookingDetails from "./BookingDetails";
 import { getBookingsForOwner , updateBookingStatus } from "../../api/submission";
 import { groupTimeRanges } from "../../utils/groupTimeRanges";
@@ -66,31 +66,34 @@ export default function BookingManagement() {
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 placeholder="Tìm kiếm theo tên, số điện thoại, sân..."
-                className="pl-8 border rounded w-full py-2"
+                className="pl-10 pr-4 py-2.5 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <select
-              className="border rounded px-3 py-2"
+              className="border rounded-lg px-4 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
               onChange={(e) => setSearchTerm(e.target.value)}
             >
-              <option value="">Tất cả</option>
+              <option value="">Tất cả sân</option>
               <option value="Sân số 1">Sân số 1</option>
               <option value="Sân số 2">Sân số 2</option>
               <option value="Sân số 3">Sân số 3</option>
             </select>
           </div>
 
-          <div className="flex gap-2 mt-4">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             {tabs.map((t) => (
               <button
                 key={t.value}
                 onClick={() => setTab(t.value)}
-                className={`px-4 py-2 rounded ${tab === t.value ? "bg-blue-600 text-white" : "bg-gray-100"}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap
+                  ${tab === t.value 
+                    ? "bg-blue-600 text-white shadow-md transform scale-105" 
+                    : "bg-white text-gray-600 hover:bg-gray-50 border"}`}
               >
                 {t.label}
               </button>
@@ -107,17 +110,19 @@ export default function BookingManagement() {
               />
             ))}
             {filteredByTab.length === 0 && (
-              <div className="text-center py-10 text-muted-foreground">Không tìm thấy đặt sân nào</div>
+              <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg">
+                Không tìm thấy đặt sân nào
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 h-fit sticky top-4">
         {selectedBooking ? (
           <BookingDetails booking={selectedBooking} handleStatusChange={handleStatusChange} />
         ) : (
-          <div className="border rounded p-6 h-full flex items-center justify-center text-center text-muted-foreground">
+          <div className="border rounded-lg p-6 h-48 flex items-center justify-center text-center text-gray-500 bg-gray-50">
             <p>Chọn một đặt sân để xem chi tiết</p>
           </div>
         )}
@@ -129,28 +134,35 @@ export default function BookingManagement() {
 function BookingCard({ booking, onSelect, onUpdateStatus }) {
   return (
     <div
-      className="rounded-lg shadow-md hover:shadow-lg transition-shadow ring-1 ring-blue-200 bg-white cursor-pointer"
+      className="rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ring-1 ring-gray-200 bg-white cursor-pointer overflow-hidden hover:ring-blue-200"
       onClick={onSelect}
     >
-      <div className="p-4 space-y-2">
+      <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
-          <div>
-            <div className="font-semibold text-blue-800 text-base">{booking.userName}</div>
-            <div className="text-sm text-gray-600">{booking.fieldName}</div>
-            <div className="text-sm text-gray-600">
-              📅 {new Date(booking.date).toLocaleDateString("vi-VN")}
+          <div className="space-y-2">
+            <div className="font-semibold text-blue-800 text-lg">{booking.userName}</div>
+            <div className="flex flex-col gap-2">
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                {booking.fieldName}
+              </div>
+              <div className="text-sm text-gray-600 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                {new Date(booking.date).toLocaleDateString("vi-VN")}
+              </div>
             </div>
           </div>
           <span
-            className={`px-3 py-1 rounded-full text-xs font-medium ${statusMap[booking.status || "confirmed_paid"].color}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium ${statusMap[booking.status || "confirmed_paid"].color}`}
           >
             {statusMap[booking.status || "confirmed_paid"].label}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-gray-500">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-500 pt-2">
           <div className="flex items-center gap-1">
-            <Phone className="h-3.5 w-3.5" /> <strong>{booking.phone}</strong>
+            <Phone className="h-4 w-4" />
+            <strong>{booking.phone}</strong>
           </div>
           {(() => {
             const groupedBySubField = booking.slots?.reduce((acc, slot) => {
@@ -160,52 +172,51 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
             }, {}) || {};
             return Object.entries(groupedBySubField).map(([subField, times], idx) => (
               <div key={idx} className="flex items-center gap-1 col-span-full sm:col-span-1">
-                <Clock className="h-3.5 w-3.5" /> {subField}: {groupTimeRanges(times).join(", ")}
+                <Clock className="h-4 w-4" />
+                {subField}: {groupTimeRanges(times).join(", ")}
               </div>
             ));
           })()}
         </div>
       </div>
 
-      <div className="bg-blue-50 px-4 py-2 border-t text-xs sm:text-sm flex flex-wrap justify-end gap-2">
-        {["confirmed_paid", "confirmed_deposit", "paid", "pending"].includes(booking.status) && (
-          <>
-            {(booking.status === "paid" || booking.status === "pending") && (
-              <>
-                {booking.status === "paid" && (
-                  <>
-                    <ActionButton
-                      label="✅ Thanh toán đủ"
-                      onClick={(e) => onUpdateStatusSafe(e, booking.id, "confirmed_paid")}
-                      color="bg-blue-600 hover:bg-blue-700 text-white"
-                    />
-                    <ActionButton
-                      label="💰 Đặt cọc"
-                      onClick={(e) => onUpdateStatusSafe(e, booking.id, "confirmed_deposit")}
-                      color="bg-teal-600 hover:bg-teal-700 text-white"
-                    />
-                  </>
-                )}
-                <ActionButton
-                  label="❌ Từ chối"
-                  onClick={(e) => onUpdateStatusSafe(e, booking.id, "canceled")}
-                  color="bg-red-500 hover:bg-red-600 text-white"
-                />
-              </>
-            )}
-
-            {["confirmed_deposit", "confirmed_paid"].includes(booking.status) && (
+      {["confirmed_paid", "confirmed_deposit", "paid", "pending"].includes(booking.status) && (
+        <div className="bg-gray-50 px-4 py-3 border-t flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+          {(booking.status === "paid" || booking.status === "pending") && (
+            <>
+              {booking.status === "paid" && (
+                <>
+                  <ActionButton
+                    label="✅ Thanh toán đủ"
+                    onClick={(e) => onUpdateStatusSafe(e, booking.id, "confirmed_paid")}
+                    className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
+                  />
+                  <ActionButton
+                    label="💰 Đặt cọc"
+                    onClick={(e) => onUpdateStatusSafe(e, booking.id, "confirmed_deposit")}
+                    className="bg-teal-600 hover:bg-teal-700 text-white w-full sm:w-auto"
+                  />
+                </>
+              )}
               <ActionButton
-                label={booking.status === "confirmed_deposit" ? "Thanh toán đủ" : "Chuyển về đặt cọc"}
-                onClick={(e) =>
-                  onUpdateStatusSafe(e, booking.id, booking.status === "confirmed_deposit" ? "confirmed_paid" : "confirmed_deposit")
-                }
-                color="border border-gray-300 hover:bg-gray-100"
+                label="❌ Từ chối"
+                onClick={(e) => onUpdateStatusSafe(e, booking.id, "canceled")}
+                className="bg-red-500 hover:bg-red-600 text-white w-full sm:w-auto"
               />
-            )}
-          </>
-        )}
-      </div>
+            </>
+          )}
+
+          {["confirmed_deposit", "confirmed_paid"].includes(booking.status) && (
+            <ActionButton
+              label={booking.status === "confirmed_deposit" ? "Thanh toán đủ" : "Chuyển về đặt cọc"}
+              onClick={(e) =>
+                onUpdateStatusSafe(e, booking.id, booking.status === "confirmed_deposit" ? "confirmed_paid" : "confirmed_deposit")
+              }
+              className="border border-gray-300 hover:bg-gray-100 text-gray-700 w-full sm:w-auto"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -213,16 +224,15 @@ function BookingCard({ booking, onSelect, onUpdateStatus }) {
     e.stopPropagation();
     onUpdateStatus(id, status);
   }
-
-  function ActionButton({ label, onClick, color }) {
-    return (
-      <button
-        className={`px-3 py-1 rounded transition whitespace-nowrap ${color}`}
-        onClick={onClick}
-      >
-        {label}
-      </button>
-    );
-  }
 }
 
+function ActionButton({ label, onClick, className }) {
+  return (
+    <button
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${className}`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}

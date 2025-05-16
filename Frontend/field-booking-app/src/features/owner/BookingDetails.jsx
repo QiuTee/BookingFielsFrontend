@@ -1,10 +1,13 @@
 import { Calendar, Clock, CreditCard, User, Phone, MapPin } from "lucide-react";
 import { groupTimeRanges } from "../../utils/groupTimeRanges";
 import { statusMap } from "../../constants/statusMap";
+import { useState } from "react";
+import { AnimatePresence, motion, scale } from "framer-motion";
+
 
 export default function BookingDetails({ booking, handleStatusChange }) {
   const totalCost = booking.slots.length * 50000;
-
+  const [zoomImage , setZoomImage] = useState(false)
   return (
     <div className="flex flex-col rounded-xl shadow-lg ring-1 ring-blue-200 bg-blue-100 transition-all duration-200 ease-in-out overflow-hidden hover:scale-[1.01]">
       <div className="border-b px-4 py-3 bg-blue-200 flex justify-between items-center">
@@ -69,8 +72,43 @@ export default function BookingDetails({ booking, handleStatusChange }) {
 
           </div>
         </div>
+        {booking.paymentImageUrl && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-500">Ảnh thanh toán</p>
+          <img 
+            src={booking.paymentImageUrl}
+            alt="Thanh toán"
+            className="w-40 h-auto mt-2 cursor-zoom-in border rounded"
+            onClick={() => setZoomImage(true)}
+          />
+
+        </div>
+      )}
       </div>
-                
+      
+      <AnimatePresence>
+        {zoomImage && (
+          <motion.div
+            className="fixed inset-0 bg-black/80 z[60] flex items-center justify-center"
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+            onClick={() => setZoomImage(false)}
+          >
+            <motion.img
+              src={booking.paymentImageUrl}
+              alt="Zoom hình ảnh thanh toán"
+              initial={{scale: 0.7}}
+              animate={{scale: 1}}
+              exit={{scale: 0.7}}
+              transition={{duration:0.3}}
+              className="max-w-full max-h-full rounded-lg shadow-lg border-4 border-white cursor-zoom-out"
+
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {(booking.status === "confirmed_deposit" || booking.status === "confirmed_paid") && (
         <div className="border-t p-4 bg-blue-200">
           {booking.status === "confirmed_deposit" ? (
@@ -82,8 +120,8 @@ export default function BookingDetails({ booking, handleStatusChange }) {
               Đánh dấu đã thanh toán đủ
             </button>
           ) : (
-            <button
-              className="w-full border border-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-100"
+<button
+              className="w-full border border-blue-500 text-blue-800 bg-blue-100 py-2 px-4 rounded hover:bg-blue-200"
               onClick={() => handleStatusChange(booking.id, "confirmed_deposit")}
             >
               Chuyển về trạng thái đặt cọc

@@ -21,6 +21,7 @@ export default function FieldDetailClientPage() {
       setLoading(true);
       try {
         const data = await getFieldBySlug(fieldSlug);
+        console.log(data)
         setField(data);
       } catch (error) {
         console.error("Không thể tải sân:", error);
