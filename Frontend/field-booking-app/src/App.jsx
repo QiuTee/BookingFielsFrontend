@@ -3,7 +3,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
-import Fields from './pages/Fields';
+// import Fields from './pages/Fields';
 import BookingPage from './pages/Bookingpage';
 import RedirectIfAuthenticated from './components/auth/RedirectIfAuthenticated';
 import BookingHistory from './pages/BookingHistory'; 
@@ -14,8 +14,6 @@ import RequireOwnerAccess from './components/auth/RequireOwnerAccess';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/dashboard_owner/DashboardHome';
 import BookingManagement from './features/owner/BookingManagement';
-// import ManageFields from './pages/dashboard/ManageFields';
-// import Notifications from './pages/dashboard/Notifications';
 import NotFound from './components/404-page/NotFound';
 
 function App() {
@@ -28,7 +26,7 @@ function App() {
       
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/fields" element={<Fields />} />
+        {/* <Route path="/fields" element={<Fields />} /> */}
         <Route path="/booking-history" element={<BookingHistory />} /> 
 
         <Route
@@ -60,7 +58,6 @@ function App() {
         {/* <Route path="fields" element={<ManageFields />} />
         <Route path="notifications" element={<Notifications />} /> */} 
       </Route>
-      
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

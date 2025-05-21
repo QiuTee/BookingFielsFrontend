@@ -13,7 +13,7 @@ export default function BookingPage() {
     const navigate = useNavigate();
     useEffect(() => {
         if (!bookingData.selectionField || bookingData.selectionField === "chưa chọn sân") {
-            return navigate("/fields");
+            return navigate(`/booking/${fieldId}`);
         }
     }, [bookingData.selectionField, navigate]);
 

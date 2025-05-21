@@ -1,13 +1,11 @@
 import { Bell, UserCircle, Menu } from "lucide-react";
 import { useState } from "react";
 import { NavLink , useParams } from "react-router-dom";
-import NotificationBell from "../booking/NotificationBell";
-import { useSelectedBooking } from "../../context/SelectedBookingContext";
+import NotificationBell from "./NotificationBell";
 
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { setSelectedBooking } = useSelectedBooking();
   const { slug } = useParams(); 
 
   return (
@@ -21,7 +19,7 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <div className="relative cursor-pointer">
-          <NotificationBell onOpenBooking={(b) => setSelectedBooking(b)} />
+          <NotificationBell/>
         </div>
         <UserCircle className="text-blue-600" size={28} />
       </div>

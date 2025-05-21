@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { BookingProvider } from './context/BookingContext.jsx'
 import { NotificationProvider } from './context/NotificationContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
-import { SelectedBookingProvider } from './context/SelectedBookingContext.jsx'
+// import { SelectedBookingProvider } from './context/SelectedBookingContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -14,9 +14,9 @@ createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <BookingProvider>
           <NotificationProvider>
-            <SelectedBookingProvider>
+            {/* <SelectedBookingProvider> */}
               <App />
-            </SelectedBookingProvider>
+            {/* </SelectedBookingProvider> */}
           </NotificationProvider>
         </BookingProvider>
       </AuthProvider>

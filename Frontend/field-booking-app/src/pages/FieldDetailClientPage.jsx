@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { MapPin, Clock, Phone, Star, Home, Bell, User, Bot } from "lucide-react";
-import TankLoading from "../components/loading/TankLoading";
+import VnvarLoading from "../components/loading/VnvarLoading";
 import { BookingContext } from "../context/BookingContext";
 import BottomNav from "../components/bottom_nav/BottomNav";
 import AccountPage from "../features/account/AccountPage";
@@ -44,7 +44,7 @@ export default function FieldDetailClientPage() {
     navigate(`/booking/${field.id}`);
   };
 
-  if (loading) return <TankLoading duration={5000} />;
+  if (loading) return <VnvarLoading duration={5000} />;
   if (!field) return <div className="text-center py-10 text-white">Đang tải sân...</div>;
 
   if (selectedTab === "notifications") {

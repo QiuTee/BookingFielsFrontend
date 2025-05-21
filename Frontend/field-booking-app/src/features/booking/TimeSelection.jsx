@@ -56,6 +56,7 @@ export default function TimeSelection({ nextStep }) {
       try {
         const dateStr = selectedDate.toLocaleDateString("en-CA");
         const slots = await getBookedSlots(bookingData.selectionField, dateStr);
+        console.log(">>> Slots received from API:", slots); 
         const grouped = {};
         slots.forEach(({ subField, time, status }) => {
           if (!grouped[subField]) grouped[subField] = {};
@@ -70,7 +71,7 @@ export default function TimeSelection({ nextStep }) {
                     const isPast = isPastTime(selectedDate, slot);
                     return !isBooked && !isPast;
                   })
-                );
+                );  
               } catch (error) {
                 console.error("Lỗi khi lấy booked slots:", error);
               }
@@ -191,7 +192,7 @@ export default function TimeSelection({ nextStep }) {
                   {timeSlots.map((slot) => {
                     const slotStatus = bookedSlots[field]?.[slot];
                     const isPaid = slotStatus === "paid";
-                    const isConfirmed = slotStatus === "confirmed";
+                    const isConfirmed = slotStatus === "confirmed_deposit" || slotStatus === "confirmed_paid";
                     const isBooked = isPaid || isConfirmed;
                     const isUnavailable = unavailableFields.includes(field);
                     const isPast = selectedDate && isPastTime(selectedDate, slot);
@@ -201,7 +202,7 @@ export default function TimeSelection({ nextStep }) {
                     let className = "cursor-pointer transition text-center px-2 py-1 text-xs ";
                     if (isUnavailable) {
                       className += "bg-gray-300 text-gray-600 cursor-not-allowed";
-                    } else if (isConfirmed) {
+                    } else if (isConfirmed) { 
                       className += "bg-red-200 text-red-800 cursor-not-allowed";
                     } else if (isPaid) {
                       className += "bg-yellow-200 text-yellow-800 cursor-not-allowed";

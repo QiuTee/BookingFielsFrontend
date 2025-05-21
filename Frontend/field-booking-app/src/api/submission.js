@@ -124,7 +124,7 @@ export async function getGuestBookings(){
     history.map(async (id) => {
       try {
         const booking = await axiosInstance.get(`/booking/public/${id}`);
-        if (booking.data && (booking.data.status === "confirmed" || booking.data.status === "unpaid")){
+        if (booking.data && (booking.data.status === "confirmed_paid" || booking.data.status === "unpaid" || booking.data.status ==="confirmed_deposit")){
           validBookings.push(booking.data);
           return booking.data;
         }
@@ -179,10 +179,10 @@ export async function getBookingsForOwner(slug){
   }
 };
 
-export async function updateBookingStatus(bookingId, newStatus) {
+export async function updateBookingStatus(bookingId, updateData) {
   try {
     const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.put(`/booking/${bookingId}/update-status`, { status: newStatus });
+    const response = await axiosInstance.put(`/booking/${bookingId}/update-status`, updateData);
     return response.data;
   } catch (error) {
     console.error("Cập nhật trạng thái booking thất bại:", error);

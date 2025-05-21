@@ -1,6 +1,15 @@
 import { useContext } from "react";
 import { BookingContext } from "../../context/BookingContext";
-import { CalendarIcon, Clock, MapPin, User, Mail, Phone, FileText, ArrowLeft, CheckCircle } from "lucide-react";
+import {
+  CalendarIcon,
+  Clock,
+  MapPin,
+  User,
+  Phone,
+  FileText,
+  ArrowLeft,
+  CheckCircle,
+} from "lucide-react";
 import { createBooking } from "../../api/submission";
 import { NotificationContext } from "../../context/NotificationContext";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +53,7 @@ export default function BookingSummary({ prevStep }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
-    const date = new Date(dateString + "T00:00:00"); 
+    const date = new Date(dateString + "T00:00:00");
     return new Intl.DateTimeFormat("vi-VN", {
       weekday: "long",
       year: "numeric",
@@ -53,11 +62,13 @@ export default function BookingSummary({ prevStep }) {
     }).format(date);
   };
 
-  const bookingRef = `BK${Math.floor(Math.random() * 10000).toString().padStart(4, "0")}`;
+  const bookingRef = `BK${Math.floor(Math.random() * 10000)
+    .toString()
+    .padStart(4, "0")}`;
 
   const handleConfirmBooking = async () => {
     const Payload = {
-      FieldId : bookingData.fieldId,
+      FieldId: bookingData.fieldId,
       FieldName: selectionField,
       Date: selectDate,
       Slots: selectedCell.map(({ field, slot }) => ({
@@ -70,16 +81,19 @@ export default function BookingSummary({ prevStep }) {
     };
 
     try {
-      console.log("Payload:", selectDate);
       const res = await createBooking(Payload);
-      const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
+      const history =
+        JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
       history.push(res.bookingId);
       localStorage.setItem("guestBookingHistory", JSON.stringify(history));
-   
+
       showNotification({ type: "success", message: "Đặt sân thành công!" });
 
       setTimeout(() => {
-        showNotification({ type: "warning", message: "Vui lòng thanh toán trong vòng 30 phút để tránh bị huỷ đơn!" });
+        showNotification({
+          type: "warning",
+          message: "Vui lòng thanh toán trong vòng 30 phút để tránh bị huỷ đơn!",
+        });
         navigate("/booking-history");
       }, 500);
     } catch (error) {
@@ -88,13 +102,15 @@ export default function BookingSummary({ prevStep }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-4 md:p-8">
-      <div className="max-w-3xl mx-auto shadow-lg rounded-xl bg-white">
+    <div className="h-screen flex flex-col bg-gradient-to-b from-blue-100 to-white">
+      <div className="max-w-3xl mx-auto w-full flex flex-col h-full bg-white rounded-xl shadow-lg overflow-hidden">
         <div className="bg-blue-100 border-b p-6 rounded-t-xl">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold text-blue-700">Xác Nhận Đặt Sân</h2>
-              <p className="mt-1 text-sm text-gray-600">Vui lòng kiểm tra thông tin trước khi xác nhận</p>
+              <p className="mt-1 text-sm text-gray-600">
+                Vui lòng kiểm tra thông tin trước khi xác nhận
+              </p>
             </div>
             <span className="px-3 py-1 text-blue-700 border border-blue-200 bg-white rounded text-sm font-semibold">
               Mã đặt sân: {bookingRef}
@@ -102,7 +118,7 @@ export default function BookingSummary({ prevStep }) {
           </div>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           <div className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center gap-2 text-blue-700">
               <MapPin className="h-5 w-5" /> Thông Tin Đặt Sân
@@ -161,7 +177,6 @@ export default function BookingSummary({ prevStep }) {
                 <span className="font-medium">{userData.name}</span>
               </div>
 
-
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-gray-500" />
                 <span className="text-gray-500 min-w-[100px]">Số điện thoại:</span>
@@ -181,11 +196,17 @@ export default function BookingSummary({ prevStep }) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row justify-between gap-3 py-4 px-6 bg-blue-50 border-t rounded-b-xl">
-          <button onClick={prevStep} className="w-full sm:w-auto px-4 py-2 border border-blue-300 rounded hover:bg-blue-100 flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 py-4 px-6 bg-blue-50 border-t">
+          <button
+            onClick={prevStep}
+            className="w-full sm:w-auto px-4 py-2 border border-blue-300 rounded hover:bg-blue-100 flex items-center gap-2"
+          >
             <ArrowLeft className="h-4 w-4" /> Quay Lại
           </button>
-          <button onClick={handleConfirmBooking} className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+          <button
+            onClick={handleConfirmBooking}
+            className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2"
+          >
             <CheckCircle className="h-4 w-4" /> Xác Nhận Đặt Sân
           </button>
         </div>

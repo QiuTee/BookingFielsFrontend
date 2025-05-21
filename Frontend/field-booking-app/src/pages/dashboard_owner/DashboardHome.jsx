@@ -3,12 +3,12 @@ import { getBookingsForOwner, updateBookingStatus } from "../../api/submission";
 import { groupTimeRanges } from "../../utils/groupTimeRanges";
 import { statusMap } from "../../constants/statusMap";
 import BookingDetailModal from "../../components/booking/BookingDetailModal";
-import { useSelectedBooking } from "../../context/SelectedBookingContext";
 import { useParams } from "react-router-dom";
+// import { useOutletContext } from "react-router-dom";
 
 export default function DashboardHome() {
   const [bookings, setBookings] = useState([]);
-  const { selectedBooking, setSelectedBooking } = useSelectedBooking();
+  const [ selectedBooking, setSelectedBooking ] = useState(null);
   const { slug } = useParams();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function DashboardHome() {
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      await updateBookingStatus(bookingId, newStatus);
+      await updateBookingStatus(bookingId , {status : newStatus});
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking.id === bookingId ? { ...booking, status: newStatus } : booking
