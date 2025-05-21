@@ -94,7 +94,7 @@ export default function BookingSummary({ prevStep }) {
           type: "warning",
           message: "Vui lòng thanh toán trong vòng 30 phút để tránh bị huỷ đơn!",
         });
-        navigate("/booking-history");
+        navigate("/san/san_bong_da_mini_chao_lua");
       }, 500);
     } catch (error) {
       showNotification({ type: "error", message: "Đặt sân thất bại!" });
