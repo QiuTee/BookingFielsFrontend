@@ -18,6 +18,7 @@ import { groupTimeRanges } from "../../utils/groupTimeRanges"
 import { useParams } from "react-router-dom"
 import { statusMap } from "../../constants/statusMap"
 import { processStatusConfig } from "../../constants/statusProcess"
+import ActionButton from "../../components/button/ActionButton"
 
 export default function BookingManagement() {
   const [bookings, setBookings] = useState([])
@@ -168,7 +169,7 @@ export default function BookingManagement() {
           </div>
         )}
       </div>
-      
+
       {zoomImageUrl && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
@@ -346,14 +347,4 @@ function BookingCard({ booking, onSelect, onUpdateStatus, onUpdateProcessStatus,
   }
 }
 
-function ActionButton({ label, icon, onClick, className }) {
-  return (
-    <button
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${className}`}
-      onClick={onClick}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-}
+

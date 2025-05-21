@@ -1,4 +1,3 @@
-import StepProgress from "../common/StepProgress";
 import TimeSelection from "../features/booking/TimeSelection";
 import BookingForm from "../features/booking/BookingForm";
 import { useState , useEffect  } from "react";

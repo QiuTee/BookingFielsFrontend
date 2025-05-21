@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect, useRef } from "react";
-import TopNotice from "../../common/TopNotice";
-import BookingLegend from "../../common/BookingLegend";
-import PricingOverlay from "../../components/PricingOverlay";
+import TopNotice from "../../components/common/TopNotice";
+import BookingLegend from "../../components/common/BookingLegend";
+import PricingOverlay from "../../components/layout/PricingOverlay";
 import { BookingContext } from "../../context/BookingContext";
 import { NotificationContext } from "../../context/NotificationContext";
 import FormatDate from "../../hooks/FormatDate";
