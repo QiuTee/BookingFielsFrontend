@@ -49,30 +49,75 @@ export default function BookingManagement() {
       booking.phone.includes(searchTerm) ||
       booking.fieldName.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+  const getProcessStatusFromStatus = (status) => {
+    switch (status){
+      case "confirmed_paid":
+        case "confirmed_deposit":
+          return "confirmed";
+      case "canceled":
+        return "no_response"
+      default:
+        return undefined
+    }
+  }
+  const getStatusFromProcessStatus = (processStatus) => {
+    switch(processStatus){
+      case "no_response":
+        return "canceled";
+      case "confirmed":
+        return "confirmed_paid";
+      default:
+        return undefined
+    }
+  }
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await updateBookingStatus(id, { status: newStatus })
+      const processStatus = getProcessStatusFromStatus(newStatus)
+      const payload = { status : newStatus , 
+        ...(processStatus && {processStatus})
+       }
+      console.log(payload)
+      await updateBookingStatus(id, payload)
       setBookings((prevBookings) =>
-        prevBookings.map((booking) => (booking.id === id ? { ...booking, status: newStatus } : booking)),
+        prevBookings.map((booking) => (booking.id === id ? { ...booking, status: newStatus , 
+          ...({processStatus}) } : booking)),
       )
-      setSelectedBooking((prev) => (prev?.id === id ? { ...prev, status: newStatus } : prev))
+      setSelectedBooking((prev) => (prev?.id === id ? { ...prev, status: newStatus , ...({processStatus}) } : prev))
     } catch (error) {
       console.error("Error updating booking status:", error)
     }
   }
 
-  const handleProcessStatusChange = async (id, newProcessStatus) => {
-    try {
-      await updateBookingStatus(id, { processStatus: newProcessStatus })
-      setBookings((prevBookings) =>
-        prevBookings.map((booking) => (booking.id === id ? { ...booking, processStatus: newProcessStatus } : booking)),
+const handleProcessStatusChange = async (id, newProcessStatus) => {
+  try {
+
+    const status = getStatusFromProcessStatus(newProcessStatus)
+    const payload = {
+      processStatus: newProcessStatus,
+      ...(status && { status }),
+    };
+
+    await updateBookingStatus(id, payload);
+
+    setBookings((prevBookings) =>
+      prevBookings.map((booking) =>
+        booking.id === id
+          ? { ...booking, processStatus: newProcessStatus, ...(status && { status}) }
+          : booking
       )
-      setSelectedBooking((prev) => (prev?.id === id ? { ...prev, processStatus: newProcessStatus } : prev))
-    } catch (error) {
-      console.error("Error updating booking process status:", error)
-    }
+    );
+
+    setSelectedBooking((prev) =>
+      prev?.id === id
+        ? { ...prev, processStatus: newProcessStatus, ...(status && { status}) }
+        : prev
+    );
+  } catch (error) {
+    console.error("Error updating booking process status:", error);
   }
+};
+
 
   const tabs = [
     { value: "all", label: "Tất cả", icon: <Filter className="h-4 w-4" /> },
