@@ -191,7 +191,7 @@ export default function TimeSelection({ nextStep }) {
                   </td>
                   {timeSlots.map((slot) => {
                     const slotStatus = bookedSlots[field]?.[slot];
-                    const isPaid = slotStatus === "paid" || slotStatus ==="unpaid";
+                    const isPaid = slotStatus === "paid" || slotStatus === "unpaid";
                     const isConfirmed = slotStatus === "confirmed_deposit" || slotStatus === "confirmed_paid";
                     const isBooked = isPaid || isConfirmed;
                     const isUnavailable = unavailableFields.includes(field);

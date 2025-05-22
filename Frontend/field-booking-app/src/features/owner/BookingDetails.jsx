@@ -7,8 +7,8 @@ import { statusMap } from "../../constants/statusMap";
 export default function BookingDetails({ booking, handleStatusChange , onZoom }) {
   const totalCost = booking.slots.length * 50000;
   return (
-    <div className="flex flex-col rounded-xl shadow-lg ring-1 ring-blue-200 bg-blue-100 transition-all duration-200 ease-in-out overflow-hidden hover:scale-[1.01]">
-      <div className="border-b px-4 py-3 bg-blue-200 flex justify-between items-center">
+    <div className="flex flex-col rounded-xl shadow-lg ring-1 ring-blue-200 bg-white transition-all duration-200 ease-in-out overflow-hidden hover:scale-[1.01]">
+      <div className="border-b px-4 py-3 bg-white flex justify-between items-center">
         <h2 className="font-semibold text-lg">Chi tiết đặt sân</h2>
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${statusMap[booking.status || "confirmed_paid"].color}`}
@@ -86,7 +86,7 @@ export default function BookingDetails({ booking, handleStatusChange , onZoom })
       
 
       {(booking.status === "confirmed_deposit" || booking.status === "confirmed_paid") && (
-        <div className="border-t p-4 bg-blue-200">
+        <div className="border-t p-4 bg-white">
           {booking.status === "confirmed_deposit" ? (
             <button
               className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 flex items-center justify-center gap-2"
@@ -97,7 +97,7 @@ export default function BookingDetails({ booking, handleStatusChange , onZoom })
             </button>
           ) : (
 <button
-              className="w-full border border-blue-500 text-blue-800 bg-blue-100 py-2 px-4 rounded hover:bg-blue-200"
+              className="w-full border border-gray-500 text-gray-800 bg-blue-100 py-2 px-4 rounded hover:bg-blue-200"
               onClick={() => handleStatusChange(booking.id, "confirmed_deposit")}
             >
               Chuyển về trạng thái đặt cọc
