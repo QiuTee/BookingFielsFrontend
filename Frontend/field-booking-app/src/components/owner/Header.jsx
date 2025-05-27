@@ -40,8 +40,8 @@ export default function Header() {
         <h1 className="text-xl font-bold mb-4">Quản lý Sân</h1>
         <NavLink to={`/san/${slug}/owner`} className="block px-4 py-2 rounded hover:bg-blue-600">Thống kê</NavLink>
         <NavLink to={`/san/${slug}/owner/bookings`} className="block px-4 py-2 rounded hover:bg-blue-600">Đặt sân</NavLink>
-        {/* <NavLink to="/dashboard/fields" className="block px-4 py-2 rounded hover:bg-blue-600">Quản lý sân</NavLink>
-        <NavLink to="/dashboard/notifications" className="block px-4 py-2 rounded hover:bg-blue-600">Thông báo</NavLink> */}
+        <NavLink to={`/san/${slug}/owner/schedule`} className="block px-4 py-2 rounded hover:bg-blue-600">Lịch đặt sân </NavLink>
+        {/* <NavLink to="/dashboard/notifications" className="block px-4 py-2 rounded hover:bg-blue-600">Thông báo</NavLink> */}
       </div>
     </header>
   );

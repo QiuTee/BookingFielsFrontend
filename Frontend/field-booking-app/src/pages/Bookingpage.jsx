@@ -7,12 +7,12 @@ import { BookingContext } from "../context/BookingContext";
 import BookingSummary from "../features/booking/BookingSumary";
 export default function BookingPage() {
     const [step, setStep] = useState(1);
-    const { fieldId } = useParams(); 
+    const { fieldId , slug } = useParams(); 
     const { bookingData } = useContext(BookingContext);
     const navigate = useNavigate();
     useEffect(() => {
         if (!bookingData.selectionField || bookingData.selectionField === "chưa chọn sân") {
-            return navigate(`/booking/${fieldId}`);
+            return navigate(`/san/${slug}`);
         }
     }, [bookingData.selectionField, navigate]);
 

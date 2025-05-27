@@ -3,7 +3,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
-// import Fields from './pages/Fields';
 import BookingPage from './pages/Bookingpage';
 import RedirectIfAuthenticated from './components/auth/RedirectIfAuthenticated';
 import BookingHistory from './pages/BookingHistory'; 
@@ -15,12 +14,13 @@ import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/dashboard_owner/DashboardHome';
 import BookingManagement from './features/owner/BookingManagement';
 import NotFound from './components/404-page/NotFound';
+import CourtSchedule from './features/owner/CourtSchedule';
 
 function App() {
   return (
     <Routes>
       <Route path="/san/:fieldSlug" element={<FieldDetailClientPage />} />
-      <Route path="/booking/:fieldId" element={<BookingPage />} />
+      <Route path="/san/:fieldSlug/booking/:fieldId" element={<BookingPage />} />
       <Route path="/payment/:bookingId" element={<Payment />} />
       <Route path="/booking-detail/:bookingId" element={<BookingDetailPage />} />
       
@@ -55,8 +55,7 @@ function App() {
         }>
         <Route index element={<DashboardHome />} />
         <Route path="bookings" element={<BookingManagement />} />
-        {/* <Route path="fields" element={<ManageFields />} />
-        <Route path="notifications" element={<Notifications />} /> */} 
+        <Route path='schedule' element={<CourtSchedule/>} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

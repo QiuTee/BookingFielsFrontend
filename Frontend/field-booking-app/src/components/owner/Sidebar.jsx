@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, CalendarDays, Landmark, Bell } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Landmark, Calendar} from "lucide-react";
 import { useParams } from "react-router-dom";
 
 export default function Sidebar() {
@@ -22,14 +22,14 @@ export default function Sidebar() {
         <CalendarDays size={18} /> Đặt sân
       </NavLink>
 
-      {/* <NavLink
-        to="/dashboard/fields"
+      <NavLink
+        to={`/san/${slug}/owner/schedule`}
         className="hover:bg-blue-600 px-4 py-2 rounded flex items-center gap-2"
       >
-        <Landmark size={18} /> Quản lý sân
+        <Calendar size={18} /> Lịch đặt sân
       </NavLink>
 
-      <NavLink
+      {/* <NavLink
         to="/dashboard/notifications"
         className="hover:bg-blue-600 px-4 py-2 rounded flex items-center gap-2"
       >

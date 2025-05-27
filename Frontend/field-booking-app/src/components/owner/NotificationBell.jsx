@@ -148,7 +148,7 @@ export default function NotificationBell(){
                 
                     <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
                         <div className="p-4 border-b">
-                            <h3 className="text-lg font-medium">Title</h3>
+                            <h3 className="text-lg font-medium"></h3>
                             <p className="text-xs text-gray-50 mt-1">Thời gian</p>
                         </div>
 

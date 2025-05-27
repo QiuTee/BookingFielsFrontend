@@ -1,13 +1,13 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import TopNotice from "../../components/common/TopNotice";
 import BookingLegend from "../../components/common/BookingLegend";
 import PricingOverlay from "../../components/layout/PricingOverlay";
 import { BookingContext } from "../../context/BookingContext";
 import { NotificationContext } from "../../context/NotificationContext";
 import FormatDate from "../../hooks/FormatDate";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { getBookedSlots } from "../../api/submission";
+import CustomDatePicker from "./CustomDatePicker";
+
 
 const timeSlots = [];
 for (let h = 6; h <= 22; h++) {
@@ -18,29 +18,6 @@ for (let h = 6; h <= 22; h++) {
 const fieldLabels = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"];
 const unavailableFields = ["Sân C"];
 
-function CustomDatePicker({ selectedDate, setSelectedDate }) {
-  const datepickerRef = useRef(null);
-
-  return (
-    <div className="w-full sm:w-64">
-      <div
-        onClick={() => datepickerRef.current.setOpen(true)}
-        className="px-4 py-2 border rounded-lg bg-white shadow text-gray-700 text-sm cursor-pointer"
-      >
-        {selectedDate ? selectedDate.toLocaleDateString("vi-VN") : "Chọn ngày"}
-      </div>
-      <DatePicker
-        ref={datepickerRef}
-        selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        dateFormat="dd/MM/yyyy"
-        withPortal
-        className="hidden" 
-        popperPlacement="bottom-start"
-      />
-    </div>
-  );
-}
 
 export default function TimeSelection({ nextStep }) {
   const [selectedCell, setSelectedCell] = useState([]);
@@ -53,33 +30,31 @@ export default function TimeSelection({ nextStep }) {
   useEffect(() => {
     async function fetchBookedSlots() {
       if (!selectedDate || !bookingData.selectionField) return;
-      try {
+      try { 
         const dateStr = selectedDate.toLocaleDateString("en-CA");
-        const slots = await getBookedSlots(bookingData.selectionField, dateStr);
+        console.log(">>> fetching booked slots for date:", dateStr, "and field:", bookingData.selectionField);
+        const slots = await getBookedSlots(bookingData.slug, dateStr);
         console.log(">>> Slots received from API:", slots); 
         const grouped = {};
         slots.forEach(({ subField, time, status }) => {
           if (!grouped[subField]) grouped[subField] = {};
           grouped[subField][time] = status;
         });
+        console.log(">>> Grouped booked slots:", grouped);
         setBookedSlots(grouped);
-                setBookedSlots(grouped);
-          
-                setSelectedCell((prev) =>
-                  prev.filter(({ field, slot }) => {
-                    const isBooked = grouped[field]?.includes(slot);
-                    const isPast = isPastTime(selectedDate, slot);
-                    return !isBooked && !isPast;
-                  })
-                );  
-              } catch (error) {
-                console.error("Lỗi khi lấy booked slots:", error);
-              }
+        setSelectedCell((prev) =>
+          prev.filter(({ field, slot }) => {
+            const isBooked = grouped[field]?.includes(slot);
+            const isPast = isPastTime(selectedDate, slot);
+            return !isBooked && !isPast;
+          })
+        );  
+          } catch (error) {
+            console.error("Lỗi khi lấy booked slots:", error);
+          }
             }
             fetchBookedSlots();
-            const interval = setInterval(() => {
-              fetchBookedSlots();
-            }, 60000);
+            const interval = setInterval(fetchBookedSlots, 60000);
             return () => clearInterval(interval);
      }, [selectedDate, bookingData.selectionField]);
   

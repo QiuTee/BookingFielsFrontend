@@ -10,6 +10,7 @@ export function BookingProvider({ children }) {
         selectionField : "chưa chọn sân",
         bookingField : [],
         fieldId : null,
+        slug : null ,
         userData : {
             name : "",
             email : "",

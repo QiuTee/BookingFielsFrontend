@@ -40,8 +40,9 @@ export default function FieldDetailClientPage() {
       ...prev,
       selectionField: field.name,
       fieldId: field.id,
+      slug : fieldSlug,
     }));
-    navigate(`/booking/${field.id}`);
+    navigate(`/san/${fieldSlug}/booking/${field.id}`);
   };
 
   if (loading) return <VnvarLoading duration={5000} />;

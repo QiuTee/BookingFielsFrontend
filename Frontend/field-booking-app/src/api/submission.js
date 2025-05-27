@@ -99,11 +99,11 @@ export const autoCancelBookings = async () => {
   }
 };
 
-export const getBookedSlots = async (fieldName, date) => {
+export const getBookedSlots = async (slug, date) => {
   try {
     const axiosInstance = getAxiosInstance();
     const response = await axiosInstance.get('/booking/booked-slots', {
-      params: { fieldName, date }
+      params: { slug, date }
     });
     return response.data;
   } catch (error) {
