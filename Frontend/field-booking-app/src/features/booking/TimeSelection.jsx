@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react"
-import { Calendar, ChevronLeft, Star } from "lucide-react"
+import { Star } from "lucide-react"
 import { BookingContext } from "../../context/BookingContext"
 import { NotificationContext } from "../../context/NotificationContext"
 import { getBookedSlots } from "../../api/submission"
 import PricingOverlay from "../../components/layout/PricingOverlay"
 import FormatDate from "../../hooks/FormatDate";
 import CustomDatePicker from "./CustomDatePicker";
+import BookingLegend from "../../components/common/BookingLegend"
 
 const timeSlots = []
 for (let h = 6; h <= 22; h++) {
@@ -15,7 +16,6 @@ for (let h = 6; h <= 22; h++) {
 
 const fieldLabels = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"]
 const unavailableFields = ["Sân C"]
-
 export default function TimeSelection({ nextStep }) {
   const [selectedCell, setSelectedCell] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -106,14 +106,6 @@ export default function TimeSelection({ nextStep }) {
   const isCellSelected = (field, slot) =>
     selectedCell.some((cell) => cell.field === field && cell.slot === slot)
 
-  const formatDate = (date) => {
-    return date.toLocaleDateString("vi-VN", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-blue-600 text-white px-4 py-4">
@@ -128,28 +120,7 @@ export default function TimeSelection({ nextStep }) {
       <div className="bg-white border-b px-4 py-3">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap items-center gap-6 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-white border border-gray-300 rounded"></div>
-              <span>Trống</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded flex items-center justify-center">
-                <Star className="w-2 h-2 text-yellow-300 fill-current" />
-              </div>
-              <span>Đã đặt</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-gray-400 rounded"></div>
-              <span>Khóa</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-cyan-200 border-2 border-cyan-400 rounded"></div>
-              <span>Đã chọn</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-purple-400 rounded"></div>
-              <span>Sự kiện</span>
-            </div>
+            <BookingLegend />
             <button
               className="text-blue-600 underline hover:text-blue-700 ml-auto"
               onClick={() => setShowPricing(true)}
@@ -241,7 +212,7 @@ export default function TimeSelection({ nextStep }) {
               <p className="text-sm text-gray-600 mb-1">
                 Đã chọn: <strong>{selectedCell.length}</strong> khung giờ –{" "}
                 <strong>{(selectedCell.length * 30) / 60} giờ</strong> – Ngày:{" "}
-                <strong>{formatDate(selectedDate)}</strong>
+                <strong>{FormatDate(selectedDate)}</strong>
               </p>
               <p className="text-xl font-bold text-green-600">
                 Tổng tiền: {(selectedCell.length * 50000).toLocaleString("vi-VN")}đ
