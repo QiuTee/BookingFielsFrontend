@@ -94,7 +94,7 @@ export default function DashboardHome() {
           />
           <StatCard
             title="Doanh thu"
-            value={formatCurrency(caculateTotalRevenue(bookings , currentField.price))}
+            value={formatCurrency(caculateTotalRevenue(bookings , currentField?.price))}
             icon={<DollarSign className="h-5 w-5" />}
           />
           <StatCard
