@@ -15,6 +15,9 @@ import DashboardHome from './pages/dashboard_owner/DashboardHome';
 import BookingManagement from './features/owner/BookingManagement';
 import NotFound from './components/404-page/NotFound';
 import CourtSchedule from './features/owner/CourtSchedule';
+import LoginOwner from './features/auth/owner/LoginOwner';
+import CourtSelection from './features/owner/CourtSelection';
+
 
 function App() {
   return (
@@ -46,7 +49,15 @@ function App() {
           }
         />
       </Route>
-
+      
+      <Route 
+        path='/login-owner'
+        element={
+          <RedirectIfAuthenticated>
+            <LoginOwner />
+          </RedirectIfAuthenticated>
+        }
+      />
       <Route path="/san/:slug/owner" element={
         <RequireOwnerAccess>
           <DashboardLayout />
@@ -57,6 +68,16 @@ function App() {
         <Route path="bookings" element={<BookingManagement />} />
         <Route path='schedule' element={<CourtSchedule/>} />
       </Route>
+
+      <Route
+        path='/owner/court-selection'
+        element={
+          <RequireOwnerAccess>
+            <CourtSelection />
+          </RequireOwnerAccess>
+        }
+      />
+      
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

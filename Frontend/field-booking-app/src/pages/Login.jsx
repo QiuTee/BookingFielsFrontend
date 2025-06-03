@@ -11,6 +11,7 @@ export default function Login() {
   const {showNotification} = useContext(NotificationContext)
   const handleLogin = async (credentials) => {
     try {
+      console.log(credentials)
       await login(credentials);
       showNotification({type:"success", message:"Đăng nhập thành công"})
       navigate('/'); 

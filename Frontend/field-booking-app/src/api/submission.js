@@ -205,4 +205,25 @@ export const markBookingAsRead = async (bookingId) => {
 };
 
 
+export const getField = async () => {
+  try { 
+    const axiosInstance = getAxiosInstance(); 
+    const response = await axiosInstance.get("field/my-fields");
+    return response.data
 
+  }catch(error){
+    console.error("Không lấy được sân" , error);
+    throw error;
+  }
+}
+
+export const getBookingToday = async () => {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const  response = await axiosInstance.get("booking/today-summary")
+    return response.data
+  } catch (error){
+    console.log("Không thể lấy được tổng booking hôm nay")
+    throw error
+  }
+}

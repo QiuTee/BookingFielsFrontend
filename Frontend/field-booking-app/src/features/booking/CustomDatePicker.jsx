@@ -6,10 +6,10 @@ function CustomDatePicker({ selectedDate, setSelectedDate }) {
   const datepickerRef = useRef(null);
 
   return (
-    <div className="w-full sm:w-64">
+    <div className="flex flex-wrap items-center justify-between max-w-7xl ">
       <div
         onClick={() => datepickerRef.current.setOpen(true)}
-        className="px-4 py-2 border rounded-lg bg-white shadow text-gray-700 text-sm cursor-pointer"
+        className="px-10 py-2 border rounded-lg bg-white shadow text-gray-700 text-sm cursor-pointer"
       >
         {selectedDate ? selectedDate.toLocaleDateString("vi-VN") : "Chọn ngày"}
       </div>

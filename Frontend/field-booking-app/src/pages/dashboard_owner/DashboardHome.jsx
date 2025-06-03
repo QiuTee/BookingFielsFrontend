@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getBookingsForOwner, updateBookingStatus } from "../../api/submission"
+import { getBookingsForOwner, updateBookingStatus , getField} from "../../api/submission"
 import { groupTimeRanges } from "../../utils/groupTimeRanges"
 import { statusMap } from "../../constants/statusMap"
 import BookingDetailModal from "../../components/booking/BookingDetailModal"
@@ -11,43 +11,50 @@ import {
   Clock,
   Phone,
   RefreshCw,
-  Users,
+  CheckCircle,
   Wallet,
   CheckCircle2,
   XCircle,
   Banknote,
   Eye,
+  DollarSign,
 } from "lucide-react"
 import StatCard from "../../features/owner/StatCard"
 import FieldCard from "../../features/owner/FieldCard"
-
+import caculateTotalRevenue from "../../utils/CaculateTotalRevenue"
+import { useField } from "../../context/FieldContext"
+import formatCurrency from "../../utils/FormatCurrency"
 export default function DashboardHome() {
   const [bookings, setBookings] = useState([])
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("available")
   const { slug } = useParams()
+  const {fields , refreshFields} = useField()
+  const currentField = fields.find((f) => f.slug === slug)
+
 
   const fetchBookings = async() => {
-      setIsLoading(true)
-      try {
-        const data = await getBookingsForOwner(slug)
-        console.log(data)
-        setBookings(data)
-      } catch (error) {
-        console.error("Error fetching bookings:", error)
-      } finally {
-        setIsLoading(false)
-      }
+    setIsLoading(true)
+    try {
+      const data = await getBookingsForOwner(slug)
+      setBookings(data)
+    } catch (error) {
+      console.error("Error fetching bookings:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
-
-
   useEffect(() => {
     if (!slug) return
     fetchBookings()
     const interval = setInterval(fetchBookings, 15000)
     return () => clearInterval(interval)
   }, [slug])
+
+  const handleUpdate = async () => {
+    await refreshFields();
+  };
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
@@ -59,26 +66,12 @@ export default function DashboardHome() {
       console.error("Error updating booking status:", error)
     }
   }
-
-  const fields = [
-    {
-      id: 1,
-      name: "Sân số 1",
-      type: "Sân 5",
-      price: 300000,
-      status: "Có sẵn",
-      desc: "Sân cỏ nhân tạo, có đèn chiều sáng",
-    },
-    {
-      id: 2,
-      name: "Sân số 2",
-      type: "Sân 7",
-      price: 400000,
-      status: "Có sẵn",
-      desc: "Sân cỏ nhân tạo, có đèn chiều sáng",
-    },
-    { id: 3, name: "Sân số 3", type: "Sân 5", price: 300000, status: "Bảo trì", desc: "Sân cỏ nhân tạo, đang bảo trì" },
-  ]
+  const stats = {
+    total: bookings.length,
+    paid: bookings.filter((b) => b.status === "paid").length,
+    completed: bookings.filter((b) => b.status === "confirmed_paid").length,
+    deposit: bookings.filter((b) => b.status === "confirmed_deposit").length,
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -91,31 +84,23 @@ export default function DashboardHome() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <StatCard
             title="Tổng lượt đặt sân"
-            value="128"
-            sub="+12% so với tháng trước"
-            trend="up"
+            value={stats.total}
             icon={<Calendar className="h-5 w-5" />}
           />
           <StatCard
-            title="Khách hàng"
-            value="64"
-            sub="+5% so với tháng trước"
-            trend="up"
-            icon={<Users className="h-5 w-5" />}
+            title="Đã thanh toán"
+            value={stats.paid}
+            icon={<CheckCircle className="h-5 w-5" />}
           />
           <StatCard
             title="Doanh thu"
-            value="12.5M"
-            sub="+18% so với tháng trước"
-            trend="up"
-            icon={<Wallet className="h-5 w-5" />}
+            value={formatCurrency(caculateTotalRevenue(bookings , currentField.price))}
+            icon={<DollarSign className="h-5 w-5" />}
           />
           <StatCard
-            title="Tỷ lệ hoàn thành"
-            value="95%"
-            sub="+2% so với tháng trước"
-            trend="up"
-            icon={<CheckCircle2 className="h-5 w-5" />}
+            title="Đã cọc"
+            value={stats.deposit}
+            icon={<Wallet className="h-5 w-5" />}
           />
         </div>
 
@@ -258,10 +243,19 @@ export default function DashboardHome() {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-100">
-            <div className="p-6 pb-2">
-              <h2 className="text-xl font-bold">Quản lý sân</h2>
-              <p className="text-sm text-gray-500">Thông tin và trạng thái các sân</p>
+            <div className="p-6 pb-2 flex items-start justify-between">
+              <div>
+                <h2 className="text-xl font-bold">Quản lý sân</h2>
+                <p className="text-sm text-gray-500">Thông tin và trạng thái các sân</p>
+              </div>
+              <button 
+                className="inline-flex items-center justify-center gap-1 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-200 bg-white hover:bg-gray-50 text-gray-700"
+                onClick={handleUpdate}
+              >
+                <RefreshCw className="h-4 w-4" />
+              </button>
             </div>
+
             <div className="p-6 pt-2">
               <div className="space-y-4">
                 <div>
@@ -281,7 +275,7 @@ export default function DashboardHome() {
                   </div>
                   <div className="space-y-4">
                     {fields
-                      .filter((f) => activeTab === "all" || f.status === "Có sẵn")
+                      .filter((f) => activeTab === "all" || f.status === "active")
                       .map((f) => (
                         <FieldCard key={f.id} field={f} />
                       ))}

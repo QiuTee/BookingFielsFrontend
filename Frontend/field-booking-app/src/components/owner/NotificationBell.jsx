@@ -1,4 +1,4 @@
-import { Bell, BookOpen } from "lucide-react";
+import { Bell, Phone } from "lucide-react";
 import { useState , useRef , useEffect} from "react";
 import { getBookingsForOwner , markBookingAsRead } from "../../api/submission";
 import { useParams } from "react-router-dom";
@@ -143,37 +143,52 @@ export default function NotificationBell(){
                     </div>
                 </div>
             )}
-            {(isDialogOpen && selectedNotification) && (
+            {isDialogOpen && selectedNotification && (
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-                
-                    <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
-                        <div className="p-4 border-b">
-                            <h3 className="text-lg font-medium"></h3>
-                            <p className="text-xs text-gray-50 mt-1">Thời gian</p>
-                        </div>
+                    <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">Chi tiết Booking</h3>
+                        <button onClick={() => setIsDialogOpen(false)} className="text-gray-400 hover:text-gray-600">
+                        ✕
+                        </button>
+                    </div>
 
-                        <div className="p-4">
-                            <p className="text-sm">Content</p>
+                    <div className="space-y-3">
+                        <div>
+                        <label className="text-sm font-medium text-gray-600">Mã booking</label>
+                        <p className="text-gray-900">{selectedNotification.id}</p>
                         </div>
-
-                        <div className="p-4 border-t flex justify-between">
-                            <button 
-                                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
-                                onClick={() => setIsDialogOpen(false)}
-                                >
-                                    Đóng
-                            </button>
-                            <button 
-                                onClick={() => markAsRead(selectedNotification.id , true)}
-                                disabled={selectedNotification.isRead}
-                                className={` px-4 py-2 round text-white  ${selectedNotification.isRead ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-                                >
-                                    {selectedNotification.isRead ? "Đã đọc" : "Đánh đâu đã đọc"}
-                            </button>
+                        <div>
+                        <label className="text-sm font-medium text-gray-600">Khách hàng</label>
+                        <p className="text-gray-900">{selectedNotification.userName}</p>
+                        <p className="text-sm text-gray-500">{selectedNotification.phone}</p>
+                        </div>
+                        <div>
+                        <label className="text-sm font-medium text-gray-600">Sân</label>
+                        <p className="text-gray-900">{selectedNotification.fieldName}</p>
+                        </div>
+                        <div>
+                        <label className="text-sm font-medium text-gray-600">Ngày</label>
+                        <p className="text-gray-900">{new Date(selectedNotification.date).toLocaleDateString("vi-VN")}</p>
+                        </div>
+                        <div>
+                        <label className="text-sm font-medium text-gray-600">Trạng thái</label>
+                        <p className="text-gray-900 capitalize">{selectedNotification.status}</p>
                         </div>
                     </div>
+
+                    <div className="flex gap-3 mt-6">
+                        <button
+                        onClick={() => setIsDialogOpen(false)}
+                        className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
+                        >
+                        Đóng
+                        </button>
+                    </div>
+                    </div>
                 </div>
-            )}
+                )}
+
              
         </div>
     )

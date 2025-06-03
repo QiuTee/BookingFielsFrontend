@@ -3,6 +3,9 @@ import { ChevronLeft, ChevronRight, Clock, Phone, AlertTriangle } from "lucide-r
 import { getBookedSlots } from "../../api/submission"
 import { useParams } from "react-router-dom"
 import { groupTimeRanges } from "../../utils/groupTimeRanges"
+import { statusMap } from "../../constants/statusMap"
+import BookingLegend from "../../components/common/BookingLegend"
+
 
 export default function CourtSchedule() {
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -15,7 +18,6 @@ export default function CourtSchedule() {
 
   const parseTimeRange = (range) => {
     if (!range || !range.includes(" - ")) {
-      //   console.warn("[parseTimeRange] Invalid range:", range);
       return { startTime: "00:00", endTime: "00:00" }
     }
     const [start, end] = range.split(" - ")
@@ -24,7 +26,6 @@ export default function CourtSchedule() {
 
   const timeToMinutes = (time) => {
     if (!time || !time.includes(":")) {
-      //   console.warn("[timeToMinutes] Invalid time:", time);
       return 0
     }
     const [hours, minutes] = time.split(":").map(Number)
@@ -39,7 +40,6 @@ export default function CourtSchedule() {
       try {
         const dateStr = selectedDate.toLocaleDateString("en-CA")
         const slots = await getBookedSlots(slug, dateStr)
-        // console.log("Fetched booked slots:", slots);
         const grouped = {}
         slots.forEach((s) => {
           if (!grouped[s.id]) {
@@ -57,7 +57,6 @@ export default function CourtSchedule() {
             time: s.time,
           })
         })
-        console.log("Grouped booked slots:", grouped)
         setBookings(Object.values(grouped))
       } catch (error) {
         console.error("Error fetching booked slots", error)
@@ -69,26 +68,18 @@ export default function CourtSchedule() {
   }, [slug, selectedDate])
 
   const getBookingPosition = (booking) => {
-  const startMinutes = timeToMinutes(booking.startTime)
-  const endMinutes = timeToMinutes(booking.endTime)
-  const duration = endMinutes - startMinutes
+    const startMinutes = timeToMinutes(booking.startTime)
+    const endMinutes = timeToMinutes(booking.endTime)
+    const duration = endMinutes - startMinutes
 
-  const timelineStart = 5 * 60 
-  const durationTotal = 20 * 60 
+    const timelineStart = 5 * 60 
+    const durationTotal = 20 * 60 
 
-  const left = ((startMinutes - timelineStart) / durationTotal) * 100
-  const width = (duration / durationTotal) * 100
+    const left = ((startMinutes - timelineStart) / durationTotal) * 100
+    const width = (duration / durationTotal) * 100
 
-  return { left: `${left}%`, width: `${width}%` }
-}
-
-
-  const getBookingColor = (status) => {
-    return status === "confirmed"
-      ? "bg-blue-500 hover:bg-blue-600 border-blue-600"
-      : "bg-yellow-500 hover:bg-yellow-600 border-yellow-600"
+    return { left: `${left}%`, width: `${width}%` }
   }
-
   const checkConflicts = (booking) => {
     return bookings.some(
       (other) =>
@@ -118,8 +109,8 @@ export default function CourtSchedule() {
     setSelectedDate(prev)
   }
 
-  const handleMouseEnter = (bookingId, event) => {
-    setHoveredBooking(bookingId)
+  const handleMouseEnter = (bookingId, court, event) => {
+    setHoveredBooking({id:bookingId, court})
     setTooltipPosition({ x: event.clientX, y: event.clientY })
   }
 
@@ -131,6 +122,21 @@ export default function CourtSchedule() {
     if (hoveredBooking) {
       setTooltipPosition({ x: event.clientX, y: event.clientY })
     }
+  }
+  const groupedSlot = (court) => {
+    return bookings.flatMap((booking) => {
+      const slots = (booking.slot || []).filter((s) => s?.subField === court && s?.time).map((s) => s.time)
+      const grouped = groupTimeRanges(slots)
+      return grouped.map((range) => {
+        const { startTime, endTime } = parseTimeRange(range)
+        return {
+          ...booking,
+          startTime,
+          endTime,
+          court,
+        }
+      })
+    })
   }
 
   return (
@@ -177,20 +183,7 @@ export default function CourtSchedule() {
 
             <div className="space-y-2 sm:space-y-3">
               {courts.map((court) => {
-                const courtBookings = bookings.flatMap((booking) => {
-                  const slots = (booking.slot || []).filter((s) => s?.subField === court && s?.time).map((s) => s.time)
-                  const grouped = groupTimeRanges(slots)
-                  return grouped.map((range) => {
-                    const { startTime, endTime } = parseTimeRange(range)
-                    return {
-                      ...booking,
-                      startTime,
-                      endTime,
-                      court,
-                    }
-                  })
-                })
-                console.log(">>> Court bookings for", court, ":", courtBookings)
+                const courtBookings = groupedSlot(court)
                 return (
                   <div key={court} className="flex items-center">
                     <div className="w-12 sm:w-16 lg:w-20 text-right pr-2 sm:pr-4 font-medium text-gray-700 text-xs sm:text-sm">
@@ -212,12 +205,10 @@ export default function CourtSchedule() {
                           const conflict = checkConflicts(booking)
                           return (
                             <div
-                              key={`${booking.id}`}
-                              className={`absolute top-1 bottom-1 rounded-md border-2 text-white text-xs font-medium flex items-center justify-center cursor-pointer touch-manipulation ${getBookingColor(
-                                booking.status,
-                              )} ${conflict ? "ring-2 ring-red-500 ring-offset-1" : ""}`}
+                              key={`${booking.id}-${booking.court}-${booking.startTime}-${booking.endTime}`}
+                              className={`absolute top-1 bottom-1 rounded-md border-2 text-white text-xs font-medium flex items-center justify-center cursor-pointer touch-manipulation ${statusMap[booking.status || "confirmed_paid"].background} ${conflict ? "ring-2 ring-red-500 ring-offset-1" : ""}`}
                               style={pos}
-                              onMouseEnter={(e) => handleMouseEnter(booking.id, e)}
+                              onMouseEnter={(e) => handleMouseEnter(booking.id, booking.court , e)}
                               onMouseLeave={handleMouseLeave}
                             >
                               <div className="px-1 sm:px-2 truncate text-center">
@@ -238,18 +229,7 @@ export default function CourtSchedule() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm pt-4 border-t">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-500 rounded" />
-                <span>Đã xác nhận</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded" />
-                <span>Chờ xác nhận</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-100 border-2 border-red-500 rounded" />
-                <span>Xung đột thời gian</span>
-              </div>
+              <BookingLegend config = {true} /> 
             </div>
           </div>
         </div>
@@ -267,7 +247,10 @@ export default function CourtSchedule() {
           }}
         >
           {(() => {
-            const booking = bookings.find((b) => b.id === hoveredBooking)
+            const court = hoveredBooking?.court
+            const newBooking = groupedSlot(court) 
+            const booking = newBooking.find((b) => b.id === hoveredBooking.id)
+           
             if (!booking) return null
             const conflict = checkConflicts(booking)
 
@@ -288,10 +271,10 @@ export default function CourtSchedule() {
                   <div>
                     <span
                       className={`inline-block px-2 py-1 rounded text-xs ${
-                        booking.status === "confirmed" ? "bg-green-600 text-white" : "bg-gray-600 text-white"
+                        statusMap[booking.status || "confirmed_paid"].color
                       }`}
                     >
-                      {booking.status === "confirmed" ? "Đã xác nhận" : "Chờ xác nhận"}
+                      {statusMap[booking.status || "confirmed_paid"].label}
                     </span>
                   </div>
                   {conflict && <div className="text-red-400 font-medium">⚠️ Xung đột thời gian!</div>}

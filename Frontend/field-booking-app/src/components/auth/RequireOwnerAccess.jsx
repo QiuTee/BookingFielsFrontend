@@ -11,10 +11,16 @@ export default function RequireOwnerAccess({ children }) {
     async function checkAccess() {
       try {
         const user = await getCurrentUser();
-        if (user.role !== 'owner' && user.role !== 'admin') {
-          setAuthorized(false);
-          return;
+
+        if(!slug){
+          if (user.role !== 'owner' && user.role !== 'admin') {
+            setAuthorized(false);
+          } else {
+            setAuthorized(true);
+          }
+          return; 
         }
+        
         const field = await getFieldBySlug(slug)
         if (!field) {
           setAuthorized(false);
@@ -36,6 +42,6 @@ export default function RequireOwnerAccess({ children }) {
   }, [slug]);
 
   if (authorized === null) return <AccessCheckLoading message="Đang kiểm tra quyền truy cập..." timeout={3000} />;
-  if (!authorized) return <Navigate to="/" replace />;
+  if (!authorized) return <Navigate to="/login-owner" replace />;
   return children;
 }
