@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { NotificationContext } from "../../context/NotificationContext";
 import { BookingContext } from "../../context/BookingContext";
 import { useAuth } from "../../context/AuthContext";
+import SelectedSlotsSummary from "../../components/SelectedSlotsSummary";
+import FormatDate from "../../hooks/FormatDate";
 export default function BookingForm({prevStep , nextStep}) {
   const [error, setError] = useState({
     name: "",
@@ -14,7 +16,7 @@ export default function BookingForm({prevStep , nextStep}) {
     phone: "",
     notes: "",
   });
-  const { setBookingData } = useContext(BookingContext);
+  const { bookingData, setBookingData } = useContext(BookingContext);
   const {showNotification} = useContext(NotificationContext);
   const { isAuthenticated } = useAuth();
   const validateForm = () => {
@@ -59,23 +61,25 @@ export default function BookingForm({prevStep , nextStep}) {
       nextStep();
     }
   }
-  return ( 
-    <div className="min-h-screen bg-gradient-to-br bg-blue-50 flex items-center justify-center p-6">
-      <div className="flex flex-col items-center w-full max-w-lg">
-        <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg">
-        <div className="text-sm text-gray-700 mb-2">
-          <a href="" className="flex items-center gap-1 text-black font-medium hover:underline" 
-          onClick= {(e) => {
-            e.preventDefault();
-            prevStep();
-          }}
-          >
-            <span>&larr;</span> Quay lại
-          </a>
-        </div>
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">Đặt Sân Thể Thao</h1>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <div className="text-sm text-gray-700 mb-4">
+            <a
+              href=""
+              className="flex items-center gap-1 text-black font-medium hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                prevStep();
+              }}
+            >
+              <span>&larr;</span> Quay lại
+            </a>
+          </div>
+          <h1 className="text-2xl font-bold text-blue-700 mb-6">Thông Tin Người Đặt</h1>
 
-        <form className="space-y-5">
+          <form className="space-y-5">
           <div>
             <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
               Tên người đặt
@@ -137,7 +141,13 @@ export default function BookingForm({prevStep , nextStep}) {
             Xác nhận đặt sân
           </button>
         </form>
-      </div>
+        </div>
+        <div className="md:border-l md:pl-6">
+          <h2 className="text-xl font-semibold text-blue-700 mb-4">Tóm Tắt Đặt Sân</h2>
+          <p className="text-sm text-gray-700"><strong>Sân:</strong> {bookingData.selectionField}</p>
+          <p className="text-sm text-gray-700 mb-4"><strong>Ngày:</strong> {FormatDate(bookingData.selectDate)}</p>
+          <SelectedSlotsSummary selectedCell={bookingData.selectedCell} />
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { useParams , useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { BookingContext } from "../context/BookingContext";
 import BookingSummary from "../features/booking/BookingSumary";
+import StepProgress from "../components/common/StepProgress";
 export default function BookingPage() {
     const [step, setStep] = useState(1);
     const { fieldId , slug } = useParams(); 
@@ -19,10 +20,16 @@ export default function BookingPage() {
     
     return (
         <div className="min-h-screen bg-gray-100 p-6">
-            {step === 1 && <TimeSelection fieldId={fieldId} nextStep={() => setStep(2)} />}
-            {step === 2 && <BookingForm prevStep={() => setStep(1)} nextStep={() => setStep(3) } />}
-            {step === 3 && <BookingSummary prevStep={() => setStep(2)} />}
-            
+            <div className="max-w-4xl mx-auto">
+                <StepProgress currentStep={step} />
+                {step === 1 && (
+                    <TimeSelection fieldId={fieldId} nextStep={() => setStep(2)} />
+                )}
+                {step === 2 && (
+                    <BookingForm prevStep={() => setStep(1)} nextStep={() => setStep(3)} />
+                )}
+                {step === 3 && <BookingSummary prevStep={() => setStep(2)} />}
+            </div>
         </div>
     )
 }
