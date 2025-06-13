@@ -1,5 +1,5 @@
-import  { useState } from "react"
-import {  MapPin, Calendar } from "lucide-react"
+import { useState } from "react"
+import { MapPin, Calendar , ArrowLeft } from "lucide-react"
 import { useBooking } from "../../context/BookingContext"
 import formatDate from "../../utils/FormatDate"
 import { groupTimeRanges } from "../../utils/groupTimeRanges"
@@ -42,16 +42,7 @@ const Button = ({
   )
 }
 
-const Input = ({
-  className = "",
-  type = "text",
-  id,
-  value,
-  onChange,
-  placeholder,
-  required,
-  ...props
-}) => {
+const Input = ({ className = "", type = "text", id, value, onChange, placeholder, required, ...props }) => {
   return (
     <input
       type={type}
@@ -74,16 +65,7 @@ const Label = ({ children, htmlFor, className = "" }) => {
   )
 }
 
-
-const Textarea = ({
-  className = "",
-  id,
-  value,
-  onChange,
-  placeholder,
-  rows,
-  ...props
-}) => {
+const Textarea = ({ className = "", id, value, onChange, placeholder, rows, ...props }) => {
   return (
     <textarea
       id={id}
@@ -105,74 +87,77 @@ const CardContent = ({ children, className = "" }) => {
   return <div className={`p-6 ${className}`}>{children}</div>
 }
 
-export default function BookingForm() {
-  const {bookingData} = useBooking()
+export default function BookingForm({prevStep}) {
+  const { bookingData } = useBooking()
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     notes: "",
   })
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }))
   }
-  const { showNotification } = useNotification();
-  const totalPrice = caculateTotalRevenue(bookingData.selectedCell.length , bookingData.price);
-  const {fieldId, selectionField, selectDate, selectedCell } = bookingData;
-  const { name, phone, notes } = formData;
-  const payload = { 
-    FieldId : fieldId,
-    FieldName : selectionField,
-    Date : selectDate,
-    Slots : selectedCell.map(({ field, slot}) => ({
-      SubField : field , 
-      Time : slot,
+  const { showNotification } = useNotification()
+  const totalPrice = caculateTotalRevenue(bookingData.selectedCell.length, bookingData.price)
+  const { fieldId, selectionField, selectDate, selectedCell } = bookingData
+  const { name, phone, notes } = formData
+  const payload = {
+    FieldId: fieldId,
+    FieldName: selectionField,
+    Date: selectDate,
+    Slots: selectedCell.map(({ field, slot }) => ({
+      SubField: field,
+      Time: slot,
     })),
-    TotalPrice : totalPrice,
-    UserName : name,
+    TotalPrice: totalPrice,
+    UserName: name,
     Phone: phone,
-    Notes : notes,
+    Notes: notes,
   }
-  const handleSubmit = async (e) => { 
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     try {
-      const response = await createBooking(payload);
-      console.log("Response", response);
-      const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
-      history.push(response.bookingId);
-      localStorage.setItem("guestBookingHistory", JSON.stringify(history));
-      showNotification({ type: "success", message: "Đặt sân thành công!" });
+      const response = await createBooking(payload)
+      console.log("Response", response)
+      const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || []
+      history.push(response.bookingId)
+      localStorage.setItem("guestBookingHistory", JSON.stringify(history))
+      showNotification({ type: "success", message: "Đặt sân thành công!" })
       setTimeout(() => {
         showNotification({
           type: "warning",
           message: "Vui lòng thanh toán trong vòng 30 phút để tránh bị huỷ đơn!",
-        });
-        navigate(`/san/${bookingData.slug}/payment/${response.bookingId}`);
-      }, 500);
-      console.log("Booking created successfully:", response);
+        })
+        navigate(`/san/${bookingData.slug}/payment/${response.bookingId}`)
+      }, 500)
+      console.log("Booking created successfully:", response)
     } catch (error) {
-      console.error("Error creating booking:", error);
+      console.error("Error creating booking:", error)
     }
   }
 
-  const grouped = bookingData.selectedCell.reduce((acc, cell) => { 
-    if(!acc[cell.field]) acc[cell.field] = []; 
-    acc[cell.field].push(cell.slot);
-    return acc;
+  const grouped = bookingData.selectedCell.reduce((acc, cell) => {
+    if (!acc[cell.field]) acc[cell.field] = []
+    acc[cell.field].push(cell.slot)
+    return acc
   }, {})
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-700">
+    <div className="min-h-screen bg-gradient-to-b from-blue-500 to-blue-600 w-full fixed inset-0 overflow-y-auto">
       <div className="flex items-center justify-between p-4 text-white">
+        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={prevStep}>
+          <ArrowLeft className="h-6 w-6" />
+        </Button>
         <h1 className="text-lg font-semibold">Đặt lịch ngay trực quan</h1>
         <div className="w-10" />
       </div>
 
-      <div className="px-4 pb-4 space-y-6">
-        <Card className="bg-blue-600 border-none text-white">
+      <div className="px-4 pb-20 space-y-6">
+        <Card className="bg-blue-500 border-none text-white">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2 text-yellow-300">
               <MapPin className="h-4 w-4" />
@@ -195,7 +180,7 @@ export default function BookingForm() {
           </CardContent>
         </Card>
 
-        <Card className="bg-blue-600 border-none text-white">
+        <Card className="bg-blue-500 border-none text-white">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2 text-yellow-300">
               <Calendar className="h-4 w-4" />
@@ -210,19 +195,20 @@ export default function BookingForm() {
                 <span className="font-medium">Giá 30 phút: </span>
                 <span>{formatCurrency(bookingData?.price)}</span>
               </div>
-              {Object.entries(grouped).map(([subfield , times]) => (
+              {Object.entries(grouped).map(([subfield, times]) => (
                 <div key={subfield} className="flex items-center justify-between">
                   <div>
                     <span className="font-medium">- {subfield} </span>
                     <span>{groupTimeRanges(times).join(", ")}</span>
                   </div>
-                  <span className="text-yellow-300 font-semibold">{formatCurrency(caculatePriceForEachSubfield(times.length, bookingData.price))}</span>
+                  <span className="text-yellow-300 font-semibold">
+                    {formatCurrency(caculatePriceForEachSubfield(times.length, bookingData.price))}
+                  </span>
                 </div>
               ))}
               <div>
                 <span className="font-medium">Tổng giờ: </span>
-                <
-                  span>{(bookingData.selectedCell.length * 30) / 60} giờ</span>
+                <span>{(bookingData.selectedCell.length * 30) / 60} giờ</span>
               </div>
               <div className="pt-2 border-t border-white/20">
                 <span className="font-medium">Tổng tiền: </span>
