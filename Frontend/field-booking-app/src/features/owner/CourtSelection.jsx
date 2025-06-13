@@ -25,7 +25,7 @@ export default function CourtSelection() {
   const [totalBookings , setTotalBookings] = useState([])
   const navigate = useNavigate()
 
-  useEffect(() => { 
+  useEffect(() => {
     if(!isAuthenticated) {
       navigate("owner/court-selection")
     }
@@ -92,18 +92,10 @@ export default function CourtSelection() {
     }
   }
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount)
-  }
-
   const handleCourtSelect = (slug) => {
     navigate(`/san/${slug}/owner`)
   }
 
-  const totalRevenue = courts.reduce((sum, court) => sum + court.todayRevenue, 0)
   const activeCourts = courts.filter((court) => court.status === "active").length
 
   return (

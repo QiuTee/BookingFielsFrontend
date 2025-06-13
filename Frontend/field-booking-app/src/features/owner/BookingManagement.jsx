@@ -1,4 +1,5 @@
-import { useState, useEffect  } from "react"
+
+import { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import {
   Calendar,
@@ -10,9 +11,7 @@ import {
   Check,
   X,
   MoreHorizontal,
-  ArrowLeft,
   MapPin,
-  DollarSign,
   CheckCircle,
   XCircle,
   Hourglass,
@@ -24,11 +23,11 @@ import {
 } from "lucide-react"
 import { statusMap } from "../../constants/statusMap"
 import { processStatusConfig } from "../../constants/statusProcess"
-import { updateBookingStatus , getBookingsForOwner } from "../../api/submission"
+import { updateBookingStatus, getBookingsForOwner } from "../../api/submission"
 import { groupTimeRanges } from "../../utils/groupTimeRanges"
 import { useField } from "../../context/FieldContext"
-import caculateTotalRevenue from "../../utils/CaculateTotalRevenue"
 import formatCurrency from "../../utils/FormatCurrency"
+
 export default function BookingManagement() {
   const [bookings, setBookings] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
@@ -37,7 +36,8 @@ export default function BookingManagement() {
   const [selectedBooking, setSelectedBooking] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [zoomImageUrl, setZoomImageUrl] = useState(null)
-  const { slug} = useParams()
+  const [discount, setDiscount] = useState(0)
+  const { slug } = useParams()
   const { fields } = useField()
   const currentField = fields.find((field) => field.slug === slug)
   console.log("Current Field:", currentField)
@@ -157,14 +157,13 @@ export default function BookingManagement() {
 
   const handleViewDetails = (booking) => {
     setSelectedBooking(booking)
+    setDiscount(booking.discountAmount || 0)
     setShowModal(true)
   }
 
-  const stats = {
-    total: bookings.length,
-    paid: bookings.filter((b) => b.status === "paid").length,
-    completed: bookings.filter((b) => b.status === "confirmed_paid").length,
-    deposit: bookings.filter((b) => b.status === "confirmed_deposit").length,
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setDiscount(0)
   }
 
   return (
@@ -173,9 +172,6 @@ export default function BookingManagement() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 focus:outline-none">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
                   <Calendar className="w-5 h-5 text-white" />
@@ -348,7 +344,7 @@ export default function BookingManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(booking.slots.length * 50000)}
+                      {formatCurrency(booking.totalPrice)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
@@ -403,7 +399,6 @@ export default function BookingManagement() {
                             </div>
                           </div>
                         )}
-
                       </div>
                     </td>
                   </tr>
@@ -411,7 +406,6 @@ export default function BookingManagement() {
               </tbody>
             </table>
           </div>
-
 
           {filteredBookings.length === 0 && (
             <div className="text-center py-12">
@@ -430,7 +424,7 @@ export default function BookingManagement() {
           <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Chi tiết booking</h3>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -501,8 +495,38 @@ export default function BookingManagement() {
               </div>
 
               <div>
+                <label className="text-sm font-medium text-gray-600">Mã giảm giá</label>
+                {selectedBooking.voucherCode ? (
+                  <div className="mt-1">
+                    <div className="inline-flex items-center px-2.5 py-1 rounded-md text-sm font-medium bg-green-50 text-green-700 border border-green-200">
+                      {selectedBooking.voucherCode}
+                    </div>
+                    {discount > 0 && (
+                      <div className="mt-2 text-green-600 text-sm flex items-center">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Giảm giá: {formatCurrency(discount)}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm mt-1">Không sử dụng mã giảm giá</p>
+                )}
+              </div>
+
+              <div>
                 <label className="text-sm font-medium text-gray-600">Giá tiền</label>
-                <p className="text-gray-900 font-semibold">{formatCurrency(selectedBooking.slots.length * 50000)}</p>
+                <div>
+                  {discount > 0 ? (
+                    <>
+                      <p className="text-gray-500 line-through">{formatCurrency(selectedBooking.totalPrice)}</p>
+                      <p className="text-gray-900 font-semibold">
+                        {formatCurrency(selectedBooking.totalPrice - discount)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-gray-900 font-semibold">{formatCurrency(selectedBooking.totalPrice)}</p>
+                  )}
+                </div>
               </div>
 
               {selectedBooking.paymentImageUrl && (
@@ -544,7 +568,7 @@ export default function BookingManagement() {
                 </button>
               )}
               <button
-                onClick={() => setShowModal(false)}
+                onClick={handleCloseModal}
                 className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Đóng

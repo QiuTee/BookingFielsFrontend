@@ -24,7 +24,7 @@ function App() {
     <Routes>
       <Route path="/san/:fieldSlug" element={<FieldDetailClientPage />} />
       <Route path="/san/:fieldSlug/booking/:fieldId" element={<BookingPage />} />
-      <Route path="/payment/:bookingId" element={<Payment />} />
+      <Route path="/san/:fieldSlug/payment/:bookingId" element={<Payment />} />
       <Route path="/booking-detail/:bookingId" element={<BookingDetailPage />} />
       
       <Route element={<Layout />}>

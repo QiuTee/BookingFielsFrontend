@@ -7,7 +7,8 @@ import PricingOverlay from "../../components/layout/PricingOverlay"
 import FormatDate from "../../hooks/FormatDate";
 import CustomDatePicker from "./CustomDatePicker";
 import BookingLegend from "../../components/common/BookingLegend"
-
+import formatCurrency from "../../utils/FormatCurrency"
+import { caculateTotalRevenue } from "../../utils/CaculateTotalRevenue"
 const timeSlots = []
 for (let h = 6; h <= 22; h++) {
   timeSlots.push(`${h.toString().padStart(2, "0")}:00`)
@@ -37,7 +38,6 @@ export default function TimeSelection({ nextStep }) {
           grouped[subField][time] = status
         })
         setBookedSlots(grouped)
-
         setSelectedCell((prev) =>
           prev.filter(({ field, slot }) => {
             const isBooked = grouped[field]?.[slot]
@@ -91,6 +91,7 @@ export default function TimeSelection({ nextStep }) {
       selectDate: selectedDate?.toLocaleDateString("en-CA"),
       selectedCell: selectedCell,
     }))
+    console.log("Selected cells:", selectedCell)
     if (validateSubmit()) nextStep?.()
   }
 
@@ -173,11 +174,19 @@ export default function TimeSelection({ nextStep }) {
                         const isDisabled = isUnavailable || isBooked || isPast
 
                         let cellClass = "h-8 border border-gray-300 cursor-pointer relative transition"
-                        if (isUnavailable) cellClass += " bg-gray-400"
-                        else if (isBooked) cellClass += " bg-red-500"
-                        else if (isSelected) cellClass += " bg-cyan-200 border-2 border-cyan-400"
-                        else if (isPast) cellClass += " bg-gray-200"
-                        else cellClass += " bg-white hover:bg-blue-50"
+                        if (isUnavailable) {
+                          cellClass += " bg-gray-400"
+                        } else if (isConfirmed) {
+                          cellClass += " bg-red-500 text-white"
+                        } else if (isPaid) {
+                          cellClass += " bg-yellow-400 text-black"
+                        } else if (isSelected) {
+                          cellClass += " bg-cyan-200 border-2 border-cyan-400"
+                        } else if (isPast) {
+                          cellClass += " bg-gray-200"
+                        } else {
+                          cellClass += " bg-white hover:bg-blue-50"
+                        }
 
                         return (
                           <td
@@ -185,7 +194,7 @@ export default function TimeSelection({ nextStep }) {
                             className={cellClass}
                             onClick={() => !isDisabled && toggleCell(field, slot)}
                           >
-                            {isBooked && (
+                            {isConfirmed && (
                               <div className="absolute inset-0 flex items-center justify-center">
                                 <Star className="w-3 h-3 text-yellow-300 fill-current" />
                               </div>
@@ -215,7 +224,7 @@ export default function TimeSelection({ nextStep }) {
                 <strong>{FormatDate(selectedDate)}</strong>
               </p>
               <p className="text-xl font-bold text-green-600">
-                Tổng tiền: {(selectedCell.length * 50000).toLocaleString("vi-VN")}đ
+                Tổng tiền: {formatCurrency(caculateTotalRevenue(selectedCell.length, bookingData.price))}
               </p>
             </>
           )}

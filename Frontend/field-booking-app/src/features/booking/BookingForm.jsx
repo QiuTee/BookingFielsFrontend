@@ -1,144 +1,289 @@
-import { User, Mail, Phone, StickyNote } from "lucide-react";
-import { useState } from "react";
-import { useContext } from "react";
-import { NotificationContext } from "../../context/NotificationContext";
-import { BookingContext } from "../../context/BookingContext";
-import { useAuth } from "../../context/AuthContext";
-export default function BookingForm({prevStep , nextStep}) {
-  const [error, setError] = useState({
-    name: "",
-    phone: "",
-  });
+import  { useState } from "react"
+import {  MapPin, Calendar } from "lucide-react"
+import { useBooking } from "../../context/BookingContext"
+import formatDate from "../../utils/FormatDate"
+import { groupTimeRanges } from "../../utils/groupTimeRanges"
+import { caculateTotalRevenue } from "../../utils/CaculateTotalRevenue"
+import formatCurrency from "../../utils/FormatCurrency"
+import { caculatePriceForEachSubfield } from "../../utils/CaculatePriceForEachSubfield"
+import { createBooking } from "../../api/submission"
+import { useNavigate } from "react-router-dom"
+import { useNotification } from "../../context/NotificationContext"
+const Button = ({
+  children,
+  variant = "default",
+  size = "default",
+  className = "",
+  type = "button",
+  onClick,
+  ...props
+}) => {
+  const baseClasses = "inline-flex items-center justify-center rounded-md font-medium transition-colors"
+
+  const variantClasses = {
+    default: "bg-primary text-primary-foreground hover:bg-primary/90",
+    ghost: "hover:bg-accent hover:text-accent-foreground",
+  }
+
+  const sizeClasses = {
+    default: "h-10 py-2 px-4",
+    icon: "h-10 w-10",
+  }
+
+  return (
+    <button
+      type={type}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+const Input = ({
+  className = "",
+  type = "text",
+  id,
+  value,
+  onChange,
+  placeholder,
+  required,
+  ...props
+}) => {
+  return (
+    <input
+      type={type}
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      required={required}
+      className={`flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ${className}`}
+      {...props}
+    />
+  )
+}
+
+const Label = ({ children, htmlFor, className = "" }) => {
+  return (
+    <label htmlFor={htmlFor} className={`text-sm font-medium leading-none ${className}`}>
+      {children}
+    </label>
+  )
+}
+
+
+const Textarea = ({
+  className = "",
+  id,
+  value,
+  onChange,
+  placeholder,
+  rows,
+  ...props
+}) => {
+  return (
+    <textarea
+      id={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      className={`flex min-h-[80px] w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ${className}`}
+      {...props}
+    />
+  )
+}
+
+const Card = ({ children, className = "" }) => {
+  return <div className={`rounded-lg border shadow-sm ${className}`}>{children}</div>
+}
+
+const CardContent = ({ children, className = "" }) => {
+  return <div className={`p-6 ${className}`}>{children}</div>
+}
+
+export default function BookingForm() {
+  const {bookingData} = useBooking()
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     notes: "",
-  });
-  const { setBookingData } = useContext(BookingContext);
-  const {showNotification} = useContext(NotificationContext);
-  const { isAuthenticated } = useAuth();
-  const validateForm = () => {
-    let valid = true;
-    const newError = { name: "", phone: "" };
-
-    if (!formData.name.trim()) {
-      newError.name = "Vui lòng nhập họ tên";
-      showNotification({type:"error", message: newError.name});
-      valid = false;
-    }
-
-    if (!formData.phone.trim()) {
-      newError.phone = "Vui lòng nhập số điện thoại";
-      showNotification({type:"error", message: newError.phone});
-      valid = false;
-    } else if (!/^[0-9]{10}$/.test(formData.phone.trim())) {
-      newError.phone = "Số điện thoại không hợp lệ";
-      showNotification({type:"error", message: newError.phone});
-      valid = false;
-    }
-
-    setError(newError);
-    return valid;
+  })
+  const navigate = useNavigate();
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
   }
-
-  const handleSubmit = (e) => {
+  const { showNotification } = useNotification();
+  const totalPrice = caculateTotalRevenue(bookingData.selectedCell.length , bookingData.price);
+  const {fieldId, selectionField, selectDate, selectedCell } = bookingData;
+  const { name, phone, notes } = formData;
+  const payload = { 
+    FieldId : fieldId,
+    FieldName : selectionField,
+    Date : selectDate,
+    Slots : selectedCell.map(({ field, slot}) => ({
+      SubField : field , 
+      Time : slot,
+    })),
+    TotalPrice : totalPrice,
+    UserName : name,
+    Phone: phone,
+    Notes : notes,
+  }
+  const handleSubmit = async (e) => { 
     e.preventDefault();
-    if (!isAuthenticated) {
-      showNotification({type:"info", message: "Bạn đang đặt sân với tư cách khách."});
-    }
-    
-    if (validateForm()) {
-      setBookingData((prev) => ({
-        ...prev, 
-        userData : {
-          name : formData.name,
-          phone : formData.phone,
-          notes : formData.notes,
-        }
-      }))
-      nextStep();
+    try {
+      const response = await createBooking(payload);
+      console.log("Response", response);
+      const history = JSON.parse(localStorage.getItem("guestBookingHistory")) || [];
+      history.push(response.bookingId);
+      localStorage.setItem("guestBookingHistory", JSON.stringify(history));
+      showNotification({ type: "success", message: "Đặt sân thành công!" });
+      setTimeout(() => {
+        showNotification({
+          type: "warning",
+          message: "Vui lòng thanh toán trong vòng 30 phút để tránh bị huỷ đơn!",
+        });
+        navigate(`/san/${bookingData.slug}/payment/${response.bookingId}`);
+      }, 500);
+      console.log("Booking created successfully:", response);
+    } catch (error) {
+      console.error("Error creating booking:", error);
     }
   }
-  return ( 
-    <div className="min-h-screen bg-gradient-to-br bg-blue-50 flex items-center justify-center p-6">
-      <div className="flex flex-col items-center w-full max-w-lg">
-        <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-lg">
-        <div className="text-sm text-gray-700 mb-2">
-          <a href="" className="flex items-center gap-1 text-black font-medium hover:underline" 
-          onClick= {(e) => {
-            e.preventDefault();
-            prevStep();
-          }}
-          >
-            <span>&larr;</span> Quay lại
-          </a>
-        </div>
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">Đặt Sân Thể Thao</h1>
 
-        <form className="space-y-5">
-          <div>
-            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1">
-              Tên người đặt
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="name"
-                placeholder="Nguyễn Văn A"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-              <User className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+  const grouped = bookingData.selectedCell.reduce((acc, cell) => { 
+    if(!acc[cell.field]) acc[cell.field] = []; 
+    acc[cell.field].push(cell.slot);
+    return acc;
+  }, {})
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-700">
+      <div className="flex items-center justify-between p-4 text-white">
+        <h1 className="text-lg font-semibold">Đặt lịch ngay trực quan</h1>
+        <div className="w-10" />
+      </div>
+
+      <div className="px-4 pb-4 space-y-6">
+        <Card className="bg-blue-600 border-none text-white">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-2 text-yellow-300">
+              <MapPin className="h-4 w-4" />
+              <span className="font-semibold">Thông tin sân</span>
             </div>
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">Tên Sân: </span>
+                <span>{bookingData?.selectionField}</span>
+              </div>
+              <div>
+                <span className="font-medium">Địa chỉ: </span>
+                <span>{bookingData?.location}</span>
+              </div>
+              <div>
+                <span className="font-medium">SĐT: </span>
+                <span>{bookingData?.phone}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-blue-600 border-none text-white">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-2 text-yellow-300">
+              <Calendar className="h-4 w-4" />
+              <span className="font-semibold">Thông tin lịch đặt</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">Ngày: </span>
+                <span>{formatDate(bookingData?.selectDate)}</span>
+              </div>
+              <div>
+                <span className="font-medium">Giá 30 phút: </span>
+                <span>{formatCurrency(bookingData?.price)}</span>
+              </div>
+              {Object.entries(grouped).map(([subfield , times]) => (
+                <div key={subfield} className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium">- {subfield} </span>
+                    <span>{groupTimeRanges(times).join(", ")}</span>
+                  </div>
+                  <span className="text-yellow-300 font-semibold">{formatCurrency(caculatePriceForEachSubfield(times.length, bookingData.price))}</span>
+                </div>
+              ))}
+              <div>
+                <span className="font-medium">Tổng giờ: </span>
+                <
+                  span>{(bookingData.selectedCell.length * 30) / 60} giờ</span>
+              </div>
+              <div className="pt-2 border-t border-white/20">
+                <span className="font-medium">Tổng tiền: </span>
+                <span className="text-yellow-300 font-bold text-lg">{formatCurrency(totalPrice)}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-white font-semibold text-sm">
+              TÊN CỦA BẠN
+            </Label>
+            <Input
+              id="name"
+              type="text"
+              value={formData.name}
+              onChange={(e) => handleInputChange("name", e.target.value)}
+              placeholder="Nhập tên của bạn"
+              className="bg-white border-none h-12 text-gray-900 placeholder:text-gray-500"
+              required
+            />
           </div>
 
-          
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-1">
-              Số điện thoại
-            </label>
-            <div className="relative">
-              <input
-                type="tel"
-                id="phone"
-                placeholder="0123456789"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <Phone className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="text-white font-semibold text-sm">
+              SỐ ĐIỆN THOẠI
+            </Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => handleInputChange("phone", e.target.value)}
+              placeholder="Nhập số điện thoại"
+              className="bg-white border-none h-12 text-gray-900 placeholder:text-gray-500"
+              required
+            />
           </div>
 
-          <div>
-            <label htmlFor="note" className="block text-sm font-semibold text-gray-700 mb-1">
-              Ghi chú
-            </label>
-            <div className="relative">
-              <textarea
-                id="note"
-                rows="3"
-                placeholder="Nhập yêu cầu đặc biệt hoặc ghi chú thêm..."
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-              />
-              <StickyNote className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-white font-semibold text-sm">
+              GHI CHÚ
+            </Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => handleInputChange("notes", e.target.value)}
+              placeholder="Nhập ghi chú (tùy chọn)"
+              className="bg-white border-none min-h-[80px] text-gray-900 placeholder:text-gray-500 resize-none"
+              rows={3}
+            />
           </div>
-
-          <button
+          <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition"
-            onClick={handleSubmit}
+            className="w-full h-12 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm rounded-lg mt-6"
           >
-            Xác nhận đặt sân
-          </button>
+            XÁC NHẬN & THANH TOÁN
+          </Button>
         </form>
       </div>
-      </div>
     </div>
-  );
+  )
 }

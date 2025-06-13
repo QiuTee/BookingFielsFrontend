@@ -1,3 +1,4 @@
+import { AwardIcon } from 'lucide-react';
 import getAxiosInstance from './Axios.js';
 
 export const loginUser = async (credential) => {
@@ -59,7 +60,7 @@ export const createBooking = async (bookingData) => {
         const response = await axiosInstance.post('/booking', bookingData);
         return response.data;
     } catch (error) {
-        console.error("Tạo đặt chỗ thất bại:", error);
+        console.error("Tạo booking thất bại:", error);
         throw error;
     }
 };
@@ -151,14 +152,10 @@ export async function getFieldBySlug(slug) {
   }
 };
 
-export async function confirmedPayment(paymentImageUrl , studentCardImageUrl ,bookingId) {
+export async function confirmedPayment(payload) {
   try {
     const axiosInstance = getAxiosInstance();
-    const response = await axiosInstance.put(`/booking/${bookingId}/confirm-payment`, {
-      paymentImageUrl,
-      studentCardImageUrl,
-      bookingId
-    });
+    const response = await axiosInstance.put(`/booking/${payload.bookingId}/confirm-payment`, payload);
     return response.data;
   } catch (error) {
     console.error("Xác nhận thanh toán thất bại:", error);
@@ -225,5 +222,17 @@ export const getBookingToday = async () => {
   } catch (error){
     console.log("Không thể lấy được tổng booking hôm nay")
     throw error
+  }
+}
+
+export const applyVoucher = async (code , totalPrice) => {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.post('voucher/apply',{code, totalPrice});
+    return response.data;
+  }
+  catch (error){
+    console.error("Áp dụng voucher thất bại:", error);
+    throw error; 
   }
 }

@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { MapPin, Clock, Phone, Star, Home, Bell, User, Bot } from "lucide-react";
 import VnvarLoading from "../components/loading/VnvarLoading";
-import { BookingContext } from "../context/BookingContext";
+import { useBooking } from "../context/BookingContext";
 import BottomNav from "../components/bottom_nav/BottomNav";
 import AccountPage from "../features/account/AccountPage";
 import { getFieldBySlug } from "../api/submission"; 
@@ -10,7 +10,7 @@ import { getFieldBySlug } from "../api/submission";
 export default function FieldDetailClientPage() {
   const { fieldSlug } = useParams();
   const navigate = useNavigate();
-  const { setBookingData } = useContext(BookingContext);
+  const { setBookingData  } = useBooking();
 
   const [field, setField] = useState(null);
   const [selectedTab, setSelectedTab] = useState("home");
@@ -21,7 +21,6 @@ export default function FieldDetailClientPage() {
       setLoading(true);
       try {
         const data = await getFieldBySlug(fieldSlug);
-        console.log(data)
         setField(data);
       } catch (error) {
         console.error("Không thể tải sân:", error);
@@ -40,7 +39,10 @@ export default function FieldDetailClientPage() {
       ...prev,
       selectionField: field.name,
       fieldId: field.id,
+      location : field.location,
+      phone: field.phone,
       slug : fieldSlug,
+      price : field.price ,
     }));
     navigate(`/san/${fieldSlug}/booking/${field.id}`);
   };
