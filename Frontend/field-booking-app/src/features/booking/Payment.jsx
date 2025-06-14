@@ -239,7 +239,7 @@ export default function Payment() {
 
                   {voucherError && (
                     <p className="text-red-500 text-sm flex items-center gap-1">
-                      <span className="inline-block w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">
+                      <span className="w-4 h-4 rounded-full bg-red-500 text-white flex items-center justify-center text-xs">
                         !
                       </span>
                       {voucherError}
@@ -258,7 +258,7 @@ export default function Payment() {
                       <div className="bg-white p-2 rounded-lg border border-blue-100 hover:border-blue-300 transition-colors">
                         <span className="font-semibold text-blue-600">SAVE50K</span> - Giảm 50,000đ
                       </div>
-                      <div className="bg-white p-2 rounded-lg border border-blue-100 hover:border-blue-300 transition-colors">
+                      <div className= "bg-white p-2 rounded-lg border border-blue-100 hover:border-blue-300 transition-colors">
                         <span className="font-semibold text-blue-600">WEEKEND15</span> - Giảm 15% cuối tuần
                       </div>
                     </div>
