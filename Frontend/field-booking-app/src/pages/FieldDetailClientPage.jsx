@@ -48,45 +48,46 @@ import {
 } from "lucide-react"
 import { getFieldBySlug } from "../api/submission"
 import VnvarLoading from "../components/loading/VnvarLoading"
+import { useBooking } from "../context/BookingContext"
 
 
-const mockField = {
-  id: 1,
-  name: "Sân Bóng Đá Champions League",
-  slug: "san-bong-da-champions-league",
-  location: "123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM",
-  phone: "0901234567",
-  price: 300000,
-  opentime: "06:00",
-  closetime: "22:00",
-  heroImage: "/placeholder.svg?height=400&width=800",
-  logo: "/placeholder.svg?height=80&width=80",
-  imageUrls: [
-    "/placeholder.svg?height=400&width=600",
-    "/placeholder.svg?height=400&width=600",
-    "/placeholder.svg?height=400&width=600",
-    "/placeholder.svg?height=400&width=600",
-    "/placeholder.svg?height=400&width=600",
-    "/placeholder.svg?height=400&width=600",
-  ],
-  services: [
-    { name: "Cho thuê bóng", price: 50000 },
-    { name: "Nước uống", price: 15000 },
-    { name: "Khăn lau", price: 10000 },
-    { name: "Giữ xe miễn phí", price: 0 },
-  ],
-  reviews: [
-    { rating: 5, comment: "Sân rất đẹp, cỏ xanh tốt. Nhân viên phục vụ nhiệt tình!" },
-    { rating: 4, comment: "Vị trí thuận tiện, có chỗ đậu xe rộng rãi." },
-    { rating: 5, comment: "Giá cả hợp lý, chất lượng sân tuyệt vời." },
-    { rating: 4, comment: "Sân sạch sẽ, ánh sáng đủ cho buổi tối." },
-  ],
-}
+// const mockField = {
+//   id: 1,
+//   name: "Sân Bóng Đá Champions League",
+//   slug: "san-bong-da-champions-league",
+//   location: "123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM",
+//   phone: "0901234567",
+//   price: 300000,
+//   opentime: "06:00",
+//   closetime: "22:00",
+//   heroImage: "/placeholder.svg?height=400&width=800",
+//   logo: "/placeholder.svg?height=80&width=80",
+//   imageUrls: [
+//     "/placeholder.svg?height=400&width=600",
+//     "/placeholder.svg?height=400&width=600",
+//     "/placeholder.svg?height=400&width=600",
+//     "/placeholder.svg?height=400&width=600",
+//     "/placeholder.svg?height=400&width=600",
+//     "/placeholder.svg?height=400&width=600",
+//   ],
+//   services: [
+//     { name: "Cho thuê bóng", price: 50000 },
+//     { name: "Nước uống", price: 15000 },
+//     { name: "Khăn lau", price: 10000 },
+//     { name: "Giữ xe miễn phí", price: 0 },
+//   ],
+//   reviews: [
+//     { rating: 5, comment: "Sân rất đẹp, cỏ xanh tốt. Nhân viên phục vụ nhiệt tình!" },
+//     { rating: 4, comment: "Vị trí thuận tiện, có chỗ đậu xe rộng rãi." },
+//     { rating: 5, comment: "Giá cả hợp lý, chất lượng sân tuyệt vời." },
+//     { rating: 4, comment: "Sân sạch sẽ, ánh sáng đủ cho buổi tối." },
+//   ],
+// }
 
 export default function FieldDetailPage() {
   const { fieldSlug } = useParams()
   const navigate = useNavigate()
-  const [field , setField] = useState(mockField)
+  const [field , setField] = useState(null)
   const [selectedTab, setSelectedTab] = useState("overview")
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showImageModal, setShowImageModal] = useState(false)
@@ -94,6 +95,7 @@ export default function FieldDetailPage() {
   const [showAllReviews, setShowAllReviews] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
   const [loading , setLoading] = useState(true)
+  const {setBookingData } = useBooking()
   useEffect(() => {
     const getField = async () => { 
       setLoading(true)
@@ -113,6 +115,16 @@ export default function FieldDetailPage() {
 
   if(loading) return <VnvarLoading duration={5000}/>
   const handleBookingClick = () => {
+    if(!field) return 
+    setBookingData((prev) => ({
+      ...prev , 
+      selectionField: field.name,
+      fieldId: field.id,
+      location: field.location,
+      phone: field.phone,
+      slug: fieldSlug,
+      price: field.price,
+    }))
     navigate(`/san/${fieldSlug}/booking/${field.id}`)
   }
 
