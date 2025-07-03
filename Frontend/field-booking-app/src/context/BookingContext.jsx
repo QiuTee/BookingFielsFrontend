@@ -20,6 +20,7 @@ export function BookingProvider({ children }) {
             phone : "",
             notes : "",
         },
+        subFields : [] , 
 
     })
 
@@ -31,4 +32,4 @@ export function BookingProvider({ children }) {
 }
 
 
-export const useBooking = () => useContext(BookingContext);
+export const useBooking = () => useContext(BookingContext); 

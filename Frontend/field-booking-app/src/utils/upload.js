@@ -20,3 +20,25 @@ export const uploadImageToSupabase = async (file, bookingId) => {
 
   return publicUrlData.publicUrl;
 };
+
+
+export const uploadFieldImage = async (file , fieldId) => {
+  const fileExt = file.name.split('.').pop();
+  const filePath = `field-images/${fieldId}_${Date.now()}.${fileExt}`;
+
+  const { data, error } = await supabase.storage
+    .from('field-images')
+    .upload(filePath, file);
+
+  if (error) {
+    console.error("Upload failed:", error.message);
+    throw error;
+  }
+
+  const { data: publicUrlData } = supabase
+    .storage
+    .from('field-images')
+    .getPublicUrl(filePath);
+
+  return publicUrlData.publicUrl;
+}

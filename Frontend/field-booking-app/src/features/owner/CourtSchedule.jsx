@@ -17,44 +17,12 @@ import {
   DollarSign,
   BarChart3,
 } from "lucide-react"
-import { getBookedSlots } from "../../api/submission"
+import { getBookedSlots , getFieldBySlug } from "../../api/submission"
 import { useParams } from "react-router-dom"
 import { groupTimeRanges } from "../../utils/groupTimeRanges"
 import { statusMap } from "../../constants/statusMap"
 import BookingLegend from "../../components/common/BookingLegend"
 
-// const mockField = {
-//   id: 1,
-//   name: "Sân Bóng Đá Champions League",
-//   slug: "san-bong-da-champions-league",
-//   location: "123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM",
-//   phone: "0901234567",
-//   price: 300000,
-//   opentime: "06:00",
-//   closetime: "22:00",
-//   heroImage: "/placeholder.svg?height=400&width=800",
-//   logo: "/placeholder.svg?height=80&width=80",
-//   imageUrls: [
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//   ],
-//   services: [
-//     { name: "Cho thuê bóng", price: 50000 },
-//     { name: "Nước uống", price: 15000 },
-//     { name: "Khăn lau", price: 10000 },
-//     { name: "Giữ xe miễn phí", price: 0 },
-//   ],
-//   reviews: [
-//     { rating: 5, comment: "Sân rất đẹp, cỏ xanh tốt. Nhân viên phục vụ nhiệt tình!" },
-//     { rating: 4, comment: "Vị trí thuận tiện, có chỗ đậu xe rộng rãi." },
-//     { rating: 5, comment: "Giá cả hợp lý, chất lượng sân tuyệt vời." },
-//     { rating: 4, comment: "Sân sạch sẽ, ánh sáng đủ cho buổi tối." },
-//   ],
-// }
 
 export default function CourtSchedule() {
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -66,7 +34,7 @@ export default function CourtSchedule() {
   const [showStats, setShowStats] = useState(false)
   const scheduleRef = useRef(null)
   const { slug } = useParams()
-
+  const [fieldData , setFieldData] = useState(null)
   const courts = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"]
   const timeSlots = Array.from({ length: 20 }, (_, i) => `${(5 + i).toString().padStart(2, "0")}:00`)
 
@@ -86,6 +54,21 @@ export default function CourtSchedule() {
     return hours * 60 + minutes
   }
 
+  useEffect(() => {
+    const fetchFieldData = async () => {
+      try { 
+        const data = await getFieldBySlug(slug) 
+        setFieldData(data)
+        console.log("Field data:", data.subFields)
+
+      }catch(error){
+        console.error("Dữ liệu sân không tồn tại", error)
+      }
+    }
+    fetchFieldData()
+  }, [slug])
+
+
   const fetchBookedSlots = async () => {
     if (!selectedDate) return
     setIsLoading(true)
@@ -101,6 +84,7 @@ export default function CourtSchedule() {
             phone: s.phone,
             userName: s.userName,
             status: s.status,
+            bookingCode : s.bookingCode
           }
         }
 
@@ -223,8 +207,8 @@ export default function CourtSchedule() {
       return acc
     }, {})
 
-    const courtUsage = courts.map((court) => {
-      const courtBookings = groupedSlot(court)
+    const courtUsage = fieldData?.subFields?.map((court) => {
+      const courtBookings = groupedSlot(court.name)
       const totalMinutes = courtBookings.reduce((total, booking) => {
         return total + (timeToMinutes(booking.endTime) - timeToMinutes(booking.startTime))
       }, 0)
@@ -431,10 +415,9 @@ export default function CourtSchedule() {
             </div>
           </div>
 
-          {/* Schedule Content */}
+
           <div className="p-4 md:p-6" onMouseMove={handleMouseMove}>
             <div className="space-y-6">
-              {/* Time Header */}
               <div className="flex border-b pb-2">
                 <div className="w-20 md:w-24 flex-shrink-0" />
                 <div className="flex-1 overflow-x-auto">
@@ -447,17 +430,15 @@ export default function CourtSchedule() {
                   </div>
                 </div>
               </div>
-
-              {/* Courts */}
+              
               <div className="space-y-4">
-                {courts.map((court) => {
-                  const courtBookings = groupedSlot(court)
+                {fieldData?.subFields?.map((court) => {
+                  const courtBookings = groupedSlot(court.name)
                   return (
-                    <div key={court} className="flex items-center">
-                      <div className="w-20 md:w-24 text-right pr-4 font-medium text-gray-800">{court}</div>
+                    <div key={court.name} className="flex items-center">
+                      <div className="w-20 md:w-24 text-right pr-4 font-medium text-gray-800">{court.name}</div>
                       <div className="flex-1 overflow-x-auto">
                         <div className="relative h-16 md:h-20 bg-gray-50 rounded-lg border border-gray-200 min-w-[900px]">
-                          {/* Time grid lines */}
                           {timeSlots.map((_, i) => (
                             <div
                               key={i}
@@ -466,7 +447,6 @@ export default function CourtSchedule() {
                             />
                           ))}
 
-                          {/* Current time indicator */}
                           {currentTimePosition && selectedDate.toDateString() === new Date().toDateString() && (
                             <div
                               className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
@@ -476,7 +456,6 @@ export default function CourtSchedule() {
                             </div>
                           )}
 
-                          {/* Bookings */}
                           {courtBookings.map((booking) => {
                             const pos = getBookingPosition(booking)
                             const conflict = checkConflicts(booking)
@@ -514,7 +493,6 @@ export default function CourtSchedule() {
                 })}
               </div>
 
-              {/* Mobile Legend */}
               <div className="md:hidden flex flex-wrap items-center justify-center gap-3 pt-4 border-t">
                 <BookingLegend config={true} />
               </div>
@@ -523,7 +501,7 @@ export default function CourtSchedule() {
         </div>
       </div>
 
-      {/* Tooltip */}
+
       {hoveredBooking && (
         <div
           className="fixed z-50 bg-white text-gray-800 p-4 rounded-lg shadow-xl max-w-xs pointer-events-none border border-gray-200"
@@ -579,7 +557,7 @@ export default function CourtSchedule() {
                     <div className="bg-gray-100 p-1 rounded">
                       <User className="h-4 w-4 text-gray-600" />
                     </div>
-                    <span>ID: {booking.id}</span>
+                    <span>Mã đặt sân: {booking.bookingCode}</span>
                   </div>
 
                   {conflict && (

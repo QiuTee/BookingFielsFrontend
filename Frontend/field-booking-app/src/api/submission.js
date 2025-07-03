@@ -1,4 +1,3 @@
-import { AwardIcon } from 'lucide-react';
 import getAxiosInstance from './Axios.js';
 
 export const loginUser = async (credential) => {
@@ -236,3 +235,26 @@ export const applyVoucher = async (code , totalPrice) => {
     throw error; 
   }
 }
+
+export const createField = async (payload) => {
+  try {
+    const axiosInstance = getAxiosInstance(); 
+    const response = await axiosInstance.post('field', payload)
+    return response.data
+  }
+  catch(error){
+    console.error("Tạo sân thất bai", error)
+    throw error
+  }
+}
+
+export const getAllFields = async () => {
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.get("/field");
+    return response.data;
+  } catch (error) {
+    console.error("Lấy tất cả sân thất bại:", error);
+    throw error;
+  }
+};

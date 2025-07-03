@@ -21,10 +21,10 @@ export default function Home() {
             Đặt sân  dễ dàng – nhanh chóng – mọi lúc
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
-            VNDC giúp bạn tìm, đặt và quản lý sân  chỉ với vài cú nhấp. Không còn phải gọi điện từng sân để đặt chỗ!
+            VNVAR giúp bạn tìm, đặt và quản lý sân  chỉ với vài cú nhấp. Không còn phải gọi điện từng sân để đặt chỗ!
           </p>
           <a
-            href="/san/san_bong_da_mini_chao_lua" 
+            href="/fields" 
             className="inline-block bg-blue-600 text-white text-lg px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
             Đặt sân ngay

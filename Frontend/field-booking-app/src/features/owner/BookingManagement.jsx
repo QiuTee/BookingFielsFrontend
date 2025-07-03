@@ -23,13 +23,9 @@ import {
   SortAsc,
   SortDesc,
   ArrowUpDown,
-  TrendingUp,
   DollarSign,
-  AlertCircle,
   MessageSquare,
   FileText,
-  Settings,
-  Plus,
   ChevronLeft,
   ChevronRight,
   ZoomIn,
@@ -58,7 +54,7 @@ export default function BookingManagement() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedBookings, setSelectedBookings] = useState([])
   const [showBulkActions, setShowBulkActions] = useState(false)
-
+  const [autoRefresh , setAutoRefresh] = useState(true)
   const { slug } = useParams()
   const { fields } = useField()
   const currentField = fields.find((field) => field.slug === slug)
@@ -70,6 +66,7 @@ export default function BookingManagement() {
       setIsLoading(true)
       try {
         const data = await getBookingsForOwner(slug)
+        console.log("data" , data)
         setBookings(data)
       } catch (error) {
         console.error("Error fetching bookings:", error)
@@ -78,9 +75,10 @@ export default function BookingManagement() {
       }
     }
     fetchBookings()
-    const interval = setInterval(fetchBookings, 30000)
+    if (!autoRefresh) return
+    const interval = setInterval(fetchBookings ,30000 )
     return () => clearInterval(interval)
-  }, [slug])
+  }, [slug ,autoRefresh])
 
   const filteredBookings = bookings
     .filter((booking) => {
@@ -399,6 +397,24 @@ export default function BookingManagement() {
                   <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                   <span className="hidden sm:inline">Làm mới</span>
                 </button>
+                <button
+                  onClick={() => setAutoRefresh((prev) => !prev)}
+                  className={`flex items-center gap-2 px-4 py-3 border rounded-lg transition-colors ${
+                    autoRefresh ? "border-green-500 text-green-600 hover:bg-green-50" : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {autoRefresh ? (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="hidden sm:inline">Tự làm mới: Bật</span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-4 w-4" />
+                      <span className="hidden sm:inline">Tự làm mới: Tắt</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -601,7 +617,7 @@ export default function BookingManagement() {
                           />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">#{booking.id}</div>
+                          <div className="text-sm font-medium text-gray-900">{booking.bookingCode}</div>
                           <div className="text-sm text-gray-500">{formatDate(booking.date)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -652,7 +668,7 @@ export default function BookingManagement() {
                             })()}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-2 py-4 whitespace-nowrap">
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                               statusMap[booking.status || "confirmed_paid"].color

@@ -1,27 +1,22 @@
-
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect } from "react"
 import { Star, Calendar, Clock, Info, ChevronRight, Filter, X } from "lucide-react"
-import { BookingContext } from "../../context/BookingContext"
-import { NotificationContext } from "../../context/NotificationContext"
-import { getBookedSlots } from "../../api/submission"
-import PricingOverlay from "../../components/layout/PricingOverlay"
-import FormatDate from "../../hooks/FormatDate"
 import CustomDatePicker from "./CustomDatePicker"
+import { useBooking } from "../../context/BookingContext"
+import { useNotification } from "../../context/NotificationContext"
 import BookingLegend from "../../components/common/BookingLegend"
+import PricingOverlay from "../../components/layout/PricingOverlay"
+import { getBookedSlots } from "../../api/submission"
+import {caculateTotalRevenue} from "../../utils/CaculateTotalRevenue"
+import FormatDate from "../../hooks/FormatDate"
 import formatCurrency from "../../utils/FormatCurrency"
-import { caculateTotalRevenue } from "../../utils/CaculateTotalRevenue"
-
-
 const timeSlots = []
 for (let h = 6; h <= 22; h++) {
   timeSlots.push(`${h.toString().padStart(2, "0")}:00`)
   if (h < 22) timeSlots.push(`${h.toString().padStart(2, "0")}:30`)
 }
 
-const fieldLabels = ["Sân A", "Sân B", "Sân C", "Sân D", "Sân E", "Sân F"]
-const unavailableFields = ["Sân C"]
 
-export default function TimeSelection({ nextStep }) {
+export default function TimeSelection({ nextStep = () => alert("Next step!") }) {
   const [selectedCell, setSelectedCell] = useState([])
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [showPricing, setShowPricing] = useState(false)
@@ -31,19 +26,17 @@ export default function TimeSelection({ nextStep }) {
     start: 0,
     end: timeSlots.length - 1,
   })
-  const { bookingData, setBookingData } = useContext(BookingContext)
-  const { showNotification } = useContext(NotificationContext)
-
+  const {bookingData , setBookingData} = useBooking()
+  const {showNotification} = useNotification()
   useEffect(() => {
-    async function fetchSlots() {
-      if (!selectedDate || !bookingData.slug) return
+    const fetchSlots = async () => { 
+      if(!selectedDate || !bookingData.slug) return 
       try {
         const dateStr = selectedDate.toLocaleDateString("en-CA")
-        const slots = await getBookedSlots(bookingData.slug, dateStr)
-
+        const slot = await getBookedSlots(bookingData.slug , dateStr)
         const grouped = {}
-        slots.forEach(({ subField, time, status }) => {
-          if (!grouped[subField]) grouped[subField] = {}
+        slot.forEach(({subField , time , status}) => {
+          if(!grouped[subField]) grouped[subField] = {}
           grouped[subField][time] = status
         })
         setBookedSlots(grouped)
@@ -54,22 +47,21 @@ export default function TimeSelection({ nextStep }) {
             return !isBooked && !isPast
           }),
         )
-      } catch (error) {
-        console.error("Lỗi khi lấy booked slots:", error)
+      }catch(error){
+        console.error("Lỗi khi lấy booked slot", error)
       }
     }
-
-    fetchSlots()
-    const interval = setInterval(fetchSlots, 60000)
+    fetchSlots() 
+    const interval = setInterval(fetchSlots , 6000)
     return () => clearInterval(interval)
-  }, [selectedDate, bookingData.slug])
+  }, [selectedDate])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setSelectedCell((prev) => prev.filter(({ slot }) => !isPastTime(selectedDate, slot)))
     }, 10000)
     return () => clearInterval(interval)
-  }, [selectedDate])
+  }, [selectedDate, bookingData.slug])
 
   useEffect(() => {
     const now = new Date()
@@ -96,6 +88,7 @@ export default function TimeSelection({ nextStep }) {
     }
   }, [selectedDate])
 
+  
   const isPastTime = (dateObj, slot) => {
     const [h, m] = slot.split(":").map(Number)
     const dt = new Date(dateObj)
@@ -112,18 +105,17 @@ export default function TimeSelection({ nextStep }) {
     }
     if (!selectedDate) {
       showNotification({ type: "error", message: "Vui lòng chọn ngày" })
-      return false
+      return false 
     }
     return true
   }
-
   const handleNextStep = () => {
     setBookingData((prev) => ({
       ...prev,
       selectDate: selectedDate?.toLocaleDateString("en-CA"),
       selectedCell: selectedCell,
     }))
-    console.log("Selected cells:", selectedCell)
+
     if (validateSubmit()) nextStep?.()
   }
 
@@ -154,7 +146,6 @@ export default function TimeSelection({ nextStep }) {
 
   const visibleTimeSlots = timeSlots.slice(visibleTimeRange.start, visibleTimeRange.end + 1)
 
-  // Kiểm tra xem có phải giờ cao điểm không
   const isPeakHour = (slot) => {
     const hour = Number.parseInt(slot.split(":")[0])
     return (hour >= 17 && hour <= 21) || (hour >= 8 && hour <= 10)
@@ -162,7 +153,6 @@ export default function TimeSelection({ nextStep }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -170,15 +160,13 @@ export default function TimeSelection({ nextStep }) {
               <h1 className="text-2xl font-bold">Đặt lịch sân</h1>
               <p className="text-blue-100 mt-1">Chọn thời gian và sân phù hợp với bạn</p>
             </div>
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm p-2 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-200" />
+            <div className="flex items-center gap-3">
               <CustomDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filters & Legend */}
       <div className="sticky top-0 z-30 bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -203,7 +191,6 @@ export default function TimeSelection({ nextStep }) {
             </button>
           </div>
 
-          {/* Mobile filters */}
           {showMobileFilters && (
             <div className="md:hidden mt-3 p-3 bg-gray-50 rounded-lg border">
               <div className="flex justify-between items-center mb-2">
@@ -218,7 +205,6 @@ export default function TimeSelection({ nextStep }) {
         </div>
       </div>
 
-      {/* Notice */}
       <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-400">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-start gap-3">
@@ -238,11 +224,9 @@ export default function TimeSelection({ nextStep }) {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="py-6 px-4">
         {showPricing && <PricingOverlay onClose={() => setShowPricing(false)} />}
         <div className="max-w-7xl mx-auto">
-          {/* Date info */}
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-2">
               <Calendar className="h-5 w-5 text-blue-600" />
@@ -253,7 +237,6 @@ export default function TimeSelection({ nextStep }) {
             </p>
           </div>
 
-          {/* Time navigation */}
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => shiftTimeRange("left")}
@@ -279,7 +262,6 @@ export default function TimeSelection({ nextStep }) {
             </button>
           </div>
 
-          {/* Booking Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
               <table className="w-full border-collapse">
@@ -304,19 +286,19 @@ export default function TimeSelection({ nextStep }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {fieldLabels.map((field, index) => (
-                    <tr key={field} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  {bookingData.subFields && bookingData.subFields.map((subField, index) => (
+                    <tr key={subField.name} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                       <td className="p-3 border-r border-gray-200 sticky left-0 z-10 bg-inherit">
-                        <div className="font-medium text-gray-800">{field}</div>
+                        <div className="font-medium text-gray-800">{subField.name}</div>
                       </td>
                       {visibleTimeSlots.map((slot) => {
-                        const slotStatus = bookedSlots[field]?.[slot]
+                        const slotStatus = bookedSlots[subField.name]?.[slot]
                         const isPaid = slotStatus === "paid" || slotStatus === "unpaid"
                         const isConfirmed = slotStatus === "confirmed_deposit" || slotStatus === "confirmed_paid"
                         const isBooked = isPaid || isConfirmed
-                        const isUnavailable = unavailableFields.includes(field)
+                        const isUnavailable = subField.status !== "active" 
                         const isPast = selectedDate && isPastTime(selectedDate, slot)
-                        const isSelected = isCellSelected(field, slot)
+                        const isSelected = isCellSelected(subField.name, slot)
                         const isDisabled = isUnavailable || isBooked || isPast
                         const isPeak = isPeakHour(slot)
 
@@ -339,12 +321,12 @@ export default function TimeSelection({ nextStep }) {
                         }
 
                         return (
-                          <td key={`${field}-${slot}`} className="p-0">
+                          <td key={`${subField.name}-${slot}`} className="p-0">
                             <button
                               disabled={isDisabled}
-                              onClick={() => !isDisabled && toggleCell(field, slot)}
+                              onClick={() => !isDisabled && toggleCell(subField.name, slot)}
                               className={cellClass}
-                              aria-label={`${field} at ${slot}`}
+                              aria-label={`${subField.name} at ${slot}`}
                             >
                               {isConfirmed && (
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -372,7 +354,6 @@ export default function TimeSelection({ nextStep }) {
             </div>
           </div>
 
-          {/* Selected Slots Summary */}
           {selectedCell.length > 0 && (
             <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-100">
               <h3 className="font-medium text-blue-800 mb-2">Khung giờ đã chọn</h3>
@@ -400,7 +381,6 @@ export default function TimeSelection({ nextStep }) {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

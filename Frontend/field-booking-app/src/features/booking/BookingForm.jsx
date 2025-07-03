@@ -218,11 +218,11 @@ export default function BookingForm({ prevStep }) {
             <div className="bg-blue-50 rounded-xl p-6 mb-8 border-2 border-dashed border-blue-300">
               <Label className="text-sm font-medium text-blue-700 block mb-3">Mã đặt sân của bạn</Label>
               <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-blue-200 shadow-sm">
-                <span className="font-mono text-xl font-bold text-blue-600">{successBookingId}</span>
+                <span className="font-mono text-xl font-bold text-blue-600">{bookingCode}</span>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => navigator.clipboard.writeText(successBookingId)}
+                  onClick={() => navigator.clipboard.writeText(bookingCode)}
                   className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 >
                   <Copy className="w-4 h-4" />

@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom"
-import { useState , useEffect} from "react"
+import { useState , useEffect } from "react"
 import {
   MapPin,
-  Phone,
+  Facebook,
   Star,
   User,
   Calendar,
@@ -17,72 +17,147 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle,
-  MessageCircle,
   Zap,
   MapPinIcon,
-  PhoneCall,
-  Mail,
-  Globe,
-  Instagram,
-  Facebook,
-  Youtube,
-  ExternalLink,
   X,
   Sparkles,
   TrendingUp,
   Users,
   Timer,
   PlayCircle,
-  Crown,
   Verified,
-  ThumbsUp,
   Clock3,
   LocateIcon as LocationIcon,
   PhoneIcon,
-  StarIcon,
   ChevronDown,
   ChevronUp,
   Eye,
   Download,
-  AwardIcon,
+  Bell,
+  ThumbsUp,
+  ExternalLink
 } from "lucide-react"
+import BottomNav from "../components/bottom_nav/BottomNav"
 import { getFieldBySlug } from "../api/submission"
+import  {useBooking} from "../context/BookingContext"
 import VnvarLoading from "../components/loading/VnvarLoading"
-import { useBooking } from "../context/BookingContext"
 
+function NotificationsPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pb-20">
+      <div className="p-6">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="bg-gradient-to-br from-orange-500 to-red-500 p-3 rounded-2xl shadow-lg">
+              <Bell className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">Thông báo</h1>
+          </div>
 
-// const mockField = {
-//   id: 1,
-//   name: "Sân Bóng Đá Champions League",
-//   slug: "san-bong-da-champions-league",
-//   location: "123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM",
-//   phone: "0901234567",
-//   price: 300000,
-//   opentime: "06:00",
-//   closetime: "22:00",
-//   heroImage: "/placeholder.svg?height=400&width=800",
-//   logo: "/placeholder.svg?height=80&width=80",
-//   imageUrls: [
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//     "/placeholder.svg?height=400&width=600",
-//   ],
-//   services: [
-//     { name: "Cho thuê bóng", price: 50000 },
-//     { name: "Nước uống", price: 15000 },
-//     { name: "Khăn lau", price: 10000 },
-//     { name: "Giữ xe miễn phí", price: 0 },
-//   ],
-//   reviews: [
-//     { rating: 5, comment: "Sân rất đẹp, cỏ xanh tốt. Nhân viên phục vụ nhiệt tình!" },
-//     { rating: 4, comment: "Vị trí thuận tiện, có chỗ đậu xe rộng rãi." },
-//     { rating: 5, comment: "Giá cả hợp lý, chất lượng sân tuyệt vời." },
-//     { rating: 4, comment: "Sân sạch sẽ, ánh sáng đủ cho buổi tối." },
-//   ],
-// }
+          <div className="space-y-4">
+            {[
+              {
+                title: "Đặt sân thành công",
+                message: "Bạn đã đặt sân Champions League lúc 19:00 ngày mai",
+                time: "5 phút trước",
+                type: "success",
+              },
+              {
+                title: "Khuyến mãi đặc biệt",
+                message: "Giảm 20% cho lần đặt sân tiếp theo",
+                time: "1 giờ trước",
+                type: "promotion",
+              },
+              {
+                title: "Nhắc nhở",
+                message: "Còn 2 giờ nữa đến giờ đá bóng của bạn",
+                time: "2 giờ trước",
+                type: "reminder",
+              },
+              {
+                title: "Sân mới",
+                message: "Sân Thể Thao Vinhomes vừa mở cửa gần bạn",
+                time: "1 ngày trước",
+                type: "info",
+              },
+              {
+                title: "Đánh giá sân",
+                message: "Hãy đánh giá trải nghiệm tại sân ABC",
+                time: "2 ngày trước",
+                type: "review",
+              },
+            ].map((notification, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-4 p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:shadow-md transition-all"
+              >
+                <div
+                  className={`w-3 h-3 rounded-full mt-2 ${
+                    notification.type === "success"
+                      ? "bg-green-500"
+                      : notification.type === "promotion"
+                        ? "bg-purple-500"
+                        : notification.type === "reminder"
+                          ? "bg-yellow-500"
+                          : notification.type === "info"
+                            ? "bg-blue-500"
+                            : "bg-gray-500"
+                  }`}
+                ></div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 mb-1">{notification.title}</h3>
+                  <p className="text-gray-600 text-sm mb-2">{notification.message}</p>
+                  <span className="text-xs text-gray-500">{notification.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AccountPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pb-20">
+      <div className="p-6">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <User className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Tài khoản</h1>
+              <p className="text-gray-600">Quản lý thông tin cá nhân</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl">
+                <h3 className="font-bold text-gray-900 mb-2">Thông tin cá nhân</h3>
+                <p className="text-gray-600 text-sm">Cập nhật thông tin của bạn</p>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl">
+                <h3 className="font-bold text-gray-900 mb-2">Lịch sử đặt sân</h3>
+                <p className="text-gray-600 text-sm">Xem các lần đặt sân trước đó</p>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl">
+                <h3 className="font-bold text-gray-900 mb-2">Ví điện tử</h3>
+                <p className="text-gray-600 text-sm">Quản lý số dư và thanh toán</p>
+              </div>
+              <div className="p-6 bg-gradient-to-br from-orange-50 to-red-100 rounded-xl">
+                <h3 className="font-bold text-gray-900 mb-2">Cài đặt</h3>
+                <p className="text-gray-600 text-sm">Tùy chỉnh ứng dụng</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function FieldDetailPage() {
   const { fieldSlug } = useParams()
@@ -94,30 +169,32 @@ export default function FieldDetailPage() {
   const [isLiked, setIsLiked] = useState(false)
   const [showAllReviews, setShowAllReviews] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
+  const [bottomNavTab, setBottomNavTab] = useState("home")
   const [loading , setLoading] = useState(true)
-  const {setBookingData } = useBooking()
+  const {setBookingData} = useBooking()
   useEffect(() => {
     const getField = async () => { 
       setLoading(true)
       try { 
         const data = await getFieldBySlug(fieldSlug)
         setField(data)
+        console.log("data" , data)
       }
       catch(error){
-        console.error("KHông thể lấy được sân " , error)
+        console.error("Không thể lấy được field" , error)
         setField(null)
-      }finally {
+      }finally{
         setTimeout(() => setLoading(false) , 1000)
       }
     }
-    getField();
-  }, [fieldSlug])
+    getField()
+  },[fieldSlug])
 
   if(loading) return <VnvarLoading duration={5000}/>
   const handleBookingClick = () => {
     if(!field) return 
     setBookingData((prev) => ({
-      ...prev , 
+      ...prev, 
       selectionField: field.name,
       fieldId: field.id,
       location: field.location,
@@ -126,6 +203,24 @@ export default function FieldDetailPage() {
       price: field.price,
     }))
     navigate(`/san/${fieldSlug}/booking/${field.id}`)
+  }
+
+  const handleBottomNavChange = (tab) => {
+    setBottomNavTab(tab)
+
+    switch (tab) {
+      case "home":
+        break
+      case "booking":
+        handleBookingClick()
+        break
+      case "notifications":
+        break
+      case "account":
+        break
+      default:
+        break
+    }
   }
 
   const nextImage = () => {
@@ -164,10 +259,26 @@ export default function FieldDetailPage() {
     { icon: Award, name: "Sân chuẩn FIFA", color: "bg-pink-500" },
   ]
 
+  if (bottomNavTab === "notifications") {
+    return (
+      <>
+        <NotificationsPage />
+        <BottomNav selectedTab={bottomNavTab} onSelectTab={handleBottomNavChange} notificationCount={5} />
+      </>
+    )
+  }
+
+  if (bottomNavTab === "account") {
+    return (
+      <>
+        <AccountPage />
+        <BottomNav selectedTab={bottomNavTab} onSelectTab={handleBottomNavChange} notificationCount={5} />
+      </>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      {/* Premium Hero Section */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pb-48">
       <div className="relative">
         <div className="relative w-full h-[70vh] overflow-hidden">
           {field.imageUrls?.length > 0 ? (
@@ -178,11 +289,9 @@ export default function FieldDetailPage() {
                 className="w-full h-full object-cover"
               />
 
-              {/* Premium Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20" />
 
-              {/* Image Navigation */}
               {field.imageUrls.length > 1 && (
                 <>
                   <button
@@ -198,7 +307,6 @@ export default function FieldDetailPage() {
                     <ChevronRight className="w-6 h-6" />
                   </button>
 
-                  {/* Elegant Image Indicators */}
                   <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
                     {field.imageUrls.map((_, index) => (
                       <button
@@ -213,7 +321,6 @@ export default function FieldDetailPage() {
                 </>
               )}
 
-              {/* Premium Action Buttons */}
               <div className="absolute top-6 right-6 flex gap-3">
                 <button
                   onClick={() => setIsLiked(!isLiked)}
@@ -232,7 +339,6 @@ export default function FieldDetailPage() {
                 </button>
               </div>
 
-              {/* View Counter */}
               <div className="absolute top-6 left-6 bg-black/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium border border-white/20">
                 <Eye className="w-4 h-4 inline mr-2" />
                 1,234 lượt xem
@@ -247,7 +353,6 @@ export default function FieldDetailPage() {
           )}
         </div>
 
-        {/* Premium Field Info Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <div className="flex items-end gap-6">
             <div className="relative">
@@ -265,10 +370,6 @@ export default function FieldDetailPage() {
 
             <div className="flex-1 text-white">
               <div className="flex items-center gap-3 mb-2">
-                <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                  <Crown className="w-3 h-3" />
-                  Premium
-                </span>
                 <span className="bg-green-500/90 backdrop-blur-sm text-white border-0 px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
                   <CheckCircle className="w-3 h-3" />
                   Đang hoạt động
@@ -303,14 +404,12 @@ export default function FieldDetailPage() {
         </div>
       </div>
 
-      {/* Premium Tab Navigation */}
-      <div className="bg-white/80 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-white/20">
+      <div className="bg-white/80 backdrop-blur-md shadow-lg z-40 border-b border-white/20">
         <div className="flex">
           {[
             { id: "overview", label: "Tổng quan", icon: MapPinIcon },
             { id: "gallery", label: "Thư viện", icon: Camera },
             { id: "reviews", label: "Đánh giá", icon: Star },
-            { id: "contact", label: "Liên hệ", icon: Phone },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -333,12 +432,10 @@ export default function FieldDetailPage() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 pb-24">
+      <div className="flex-1 mb-20">
         {selectedTab === "overview" && (
           <div className="p-6 space-y-8">
-            {/* Premium Quick Info Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg">
                 <div className="p-6">
                   <div className="flex items-center gap-4">
@@ -387,9 +484,51 @@ export default function FieldDetailPage() {
                   </div>
                 </div>
               </div>
+
+              {field.faceBook && (
+                <div className="group hover:shadow-xl transition-all duration-300 border-0 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10"></div>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-white/5 rounded-full translate-x-10 -translate-y-10"></div>
+
+                  <div className="p-6 relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl group-hover:scale-110 transition-transform shadow-lg border border-white/30">
+                        <Facebook className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-sm font-semibold text-blue-100">Facebook Page</p>
+                          <div className="bg-white/20 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                            <span className="text-xs font-bold text-white flex items-center gap-1">
+                              <ThumbsUp className="w-3 h-3" />
+                              Verified
+                            </span>
+                          </div>
+                        </div>
+                        <a
+                          href={field.faceBook}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-white hover:text-blue-100 transition-colors flex items-center gap-2 group/link"
+                        >
+                          <span className="truncate">
+                            {field.faceBook.replace("https://", "").replace("http://", "")}
+                          </span>
+                          <ExternalLink className="w-4 h-4 opacity-70 group-hover/link:opacity-100 transition-opacity" />
+                        </a>
+                        <p className="text-xs text-blue-200 mt-1 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3" />
+                          Xem thêm hình ảnh & đánh giá
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/20 via-white/40 to-white/20"></div>
+                </div>
+              )}
             </div>
 
-            {/* Premium Features */}
             <div className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 rounded-2xl">
               <div className="p-8">
                 <div className="flex items-center justify-between mb-8">
@@ -444,7 +583,6 @@ export default function FieldDetailPage() {
               </div>
             </div>
 
-            {/* Premium Pricing */}
             <div className="border-0 shadow-xl bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white relative overflow-hidden rounded-2xl">
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-transparent to-white/10"></div>
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full translate-x-16 -translate-y-16"></div>
@@ -474,7 +612,6 @@ export default function FieldDetailPage() {
               </div>
             </div>
 
-            {/* Services */}
             {field.services?.length > 0 && (
               <div className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 rounded-2xl">
                 <div className="p-8">
@@ -560,214 +697,32 @@ export default function FieldDetailPage() {
             </div>
           </div>
         )}
-
-        {selectedTab === "reviews" && (
-          <div className="p-6 space-y-8">
-            {/* Reviews Summary */}
-            <div className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 rounded-2xl">
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                    <div className="bg-gradient-to-br from-yellow-400 to-orange-500 p-3 rounded-2xl shadow-lg">
-                      <StarIcon className="w-6 h-6 text-white" />
-                    </div>
-                    Đánh giá từ khách hàng
-                  </h3>
-                  <div className="text-center">
-                    <div className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-1">
-                      {getAverageRating()}
-                    </div>
-                    <div className="flex items-center gap-1 mb-1 justify-center">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${
-                            i < Math.floor(getAverageRating()) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-sm text-gray-500 font-medium">{field.reviews?.length || 0} đánh giá</div>
-                  </div>
-                </div>
-
-                {/* Rating Distribution */}
-                <div className="space-y-4 mb-8">
-                  {[5, 4, 3, 2, 1].map((rating) => {
-                    const count = field.reviews?.filter((r) => r.rating === rating).length || 0
-                    const percentage = field.reviews?.length ? (count / field.reviews.length) * 100 : 0
-                    return (
-                      <div key={rating} className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 w-20">
-                          <span className="text-sm font-bold">{rating}</span>
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        </div>
-                        <div className="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-yellow-400 to-orange-400 h-3 rounded-full transition-all duration-1000 ease-out"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-600 font-bold w-12 text-right">{count}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Individual Reviews */}
-            {field.reviews?.length > 0 && (
-              <div className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50 rounded-2xl">
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-bold text-gray-900">Nhận xét chi tiết</h3>
-                    {field.reviews.length > 3 && (
-                      <button
-                        onClick={() => setShowAllReviews(!showAllReviews)}
-                        className="border-2 border-blue-200 hover:bg-blue-50 px-6 py-3 rounded-lg font-semibold text-blue-600 transition-all duration-200 flex items-center gap-2"
-                      >
-                        {showAllReviews ? (
-                          <>
-                            <ChevronUp className="w-4 h-4" />
-                            Thu gọn
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown className="w-4 h-4" />
-                            Xem tất cả ({field.reviews.length})
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                  <div className="space-y-6">
-                    {(showAllReviews ? field.reviews : field.reviews.slice(0, 3)).map((review, i) => (
-                      <div key={i} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
-                        <div className="flex items-start gap-4">
-                          <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                            <User className="w-7 h-7 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-3">
-                              <h4 className="font-bold text-gray-900 text-lg">Khách hàng {i + 1}</h4>
-                              <div className="flex items-center gap-1">
-                                {Array.from({ length: review.rating }).map((_, j) => (
-                                  <Star key={j} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-gray-700 leading-relaxed mb-4 font-medium">{review.comment}</p>
-                            <div className="flex items-center gap-6 text-sm text-gray-500">
-                              <span className="font-medium">2 ngày trước</span>
-                              <button className="h-8 px-3 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1 hover:bg-gray-100 rounded-lg">
-                                <ThumbsUp className="w-3 h-3" />
-                                Hữu ích
-                              </button>
-                              <button className="h-8 px-3 text-gray-500 hover:text-gray-700 transition-colors flex items-center gap-1 hover:bg-gray-100 rounded-lg">
-                                <MessageCircle className="w-3 h-3" />
-                                Trả lời
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {selectedTab === "contact" && (
-          <div className="p-6">
-            <div className="border-0 shadow-xl bg-gradient-to-br from-green-500 via-blue-600 to-purple-700 text-white relative overflow-hidden rounded-2xl">
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full translate-x-20 -translate-y-20"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-16 translate-y-16"></div>
-                <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-white rounded-full -translate-x-12 -translate-y-12"></div>
-              </div>
-
-              <div className="p-8 relative z-10">
-                <h3 className="text-3xl font-bold mb-8 text-center">Liên hệ với chúng tôi</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-6">
-                    <a
-                      href={`tel:${field.phone}`}
-                      className="flex items-center gap-4 p-6 bg-white/10 backdrop-blur-md rounded-2xl hover:bg-white/20 transition-all group border border-white/20"
-                    >
-                      <div className="bg-white/20 p-4 rounded-2xl group-hover:scale-110 transition-transform">
-                        <PhoneCall className="w-7 h-7" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 font-semibold mb-1">Điện thoại</p>
-                        <p className="font-bold text-xl">{field.phone}</p>
-                      </div>
-                    </a>
-                    <div className="flex items-center gap-4 p-6 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
-                      <div className="bg-white/20 p-4 rounded-2xl">
-                        <Mail className="w-7 h-7" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/80 font-semibold mb-1">Email</p>
-                        <p className="font-bold text-xl">contact@{fieldSlug}.com</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="flex gap-4">
-                      <button className="flex-1 bg-white/10 backdrop-blur-md hover:bg-white/20 p-6 h-auto border border-white/20 rounded-2xl transition-all duration-200 flex items-center justify-center">
-                        <Facebook className="w-7 h-7" />
-                      </button>
-                      <button className="flex-1 bg-white/10 backdrop-blur-md hover:bg-white/20 p-6 h-auto border border-white/20 rounded-2xl transition-all duration-200 flex items-center justify-center">
-                        <Instagram className="w-7 h-7" />
-                      </button>
-                      <button className="flex-1 bg-white/10 backdrop-blur-md hover:bg-white/20 p-6 h-auto border border-white/20 rounded-2xl transition-all duration-200 flex items-center justify-center">
-                        <Youtube className="w-7 h-7" />
-                      </button>
-                    </div>
-                    <button className="w-full flex items-center justify-center gap-3 p-6 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-2xl transition-all group border border-white/20 h-auto">
-                      <Globe className="w-7 h-7 group-hover:scale-110 transition-transform" />
-                      <span className="font-bold text-xl">Website</span>
-                      <ExternalLink className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Premium Floating Booking Button */}
-      <div className="fixed bottom-6 left-6 right-6 z-50">
+      <div className="fixed bottom-36 left-6 right-6 z-40">
         <button
           onClick={handleBookingClick}
-          className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-800 text-white font-bold py-6 px-8 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden group border-0 h-auto"
+          className="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:from-blue-600 hover:via-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 relative overflow-hidden group border-0 h-auto"
         >
-          {/* Animated Background */}
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
 
           <div className="relative z-10 flex items-center justify-between w-full">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-3 rounded-xl">
-                <Calendar className="w-6 h-6" />
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2.5 rounded-xl">
+                <Calendar className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <div className="text-xl font-bold">Đặt lịch ngay</div>
-                <div className="text-white/80 text-sm">Xác nhận trong 5 phút</div>
+                <div className="text-lg font-bold">Đặt sân ngay</div>
+                <div className="text-white/80 text-xs">Xác nhận tức thì</div>
               </div>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl font-bold text-lg">
+            <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-xl font-bold">
               {formatPrice(field.price)}/30p
             </div>
           </div>
         </button>
       </div>
 
-      {/* Premium Image Modal */}
       {showImageModal && field.imageUrls?.length > 0 && (
         <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
           <div className="relative w-full h-full flex items-center justify-center p-4">
@@ -813,7 +768,6 @@ export default function FieldDetailPage() {
               ))}
             </div>
 
-            {/* Image Counter & Actions */}
             <div className="absolute top-6 left-6 flex gap-3">
               <div className="bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/20">
                 {currentImageIndex + 1} / {field.imageUrls.length}
@@ -826,6 +780,7 @@ export default function FieldDetailPage() {
           </div>
         </div>
       )}
+      <BottomNav selectedTab={bottomNavTab} onSelectTab={handleBottomNavChange} notificationCount={5} />
     </div>
   )
 }

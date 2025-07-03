@@ -28,13 +28,7 @@ export default function LoginOwner() {
       await login(payLoad);
       showNotification({type:"success" , message:"Đăng nhập thành công"})
       const field = await getField()
-      console.log("field length" ,field.length , "field" , field , "slug", field[0].slug)
-      if (field.length === 1  ) { 
-        navigate(`/san/${field[0].slug}/owner`)
-      }else if (field.length > 1 ){
         navigate("/owner/court-selection")
-      }
-
     }catch(error){
       showNotification({type :"error" , message:"Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu."})
     }
