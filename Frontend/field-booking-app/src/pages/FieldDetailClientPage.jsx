@@ -167,7 +167,6 @@ export default function FieldDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showImageModal, setShowImageModal] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
-  const [showAllReviews, setShowAllReviews] = useState(false)
   const [showAllFeatures, setShowAllFeatures] = useState(false)
   const [bottomNavTab, setBottomNavTab] = useState("home")
   const [loading , setLoading] = useState(true)
@@ -201,6 +200,7 @@ export default function FieldDetailPage() {
       phone: field.phone,
       slug: fieldSlug,
       price: field.price,
+      subFields : field.subFields
     }))
     navigate(`/san/${fieldSlug}/booking/${field.id}`)
   }

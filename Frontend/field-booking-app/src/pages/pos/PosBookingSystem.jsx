@@ -184,7 +184,6 @@ export default function PosBookingSystem() {
       !newBooking.customerName ||
       !newBooking.customerPhone
     ) {
-      alert("Vui lòng điền đầy đủ thông tin bắt buộc")
       return
     }
 

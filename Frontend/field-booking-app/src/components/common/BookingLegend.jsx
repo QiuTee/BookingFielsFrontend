@@ -2,8 +2,12 @@ export default function BookingLegend({config = false}) {
     return(
         <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4 px-2 sm:px-0">
             <div className="flex items-center space-x-1">
-                <div className="w-4 h-4 border-2 border-yellow-500 bg-yellow-100 rounded-sm"></div>
+                <div className="w-4 h-4 border-2 border-orange-500 bg-orange-100 rounded-sm"></div>
                 <span>Đang chờ xác nhận</span>
+            </div>
+            <div className="flex items-center space-x-1">
+                <div className="w-4 h-4 border-2 border-yellow-500 bg-yellow-100 rounded-sm"></div>
+                <span>Đã giữ chỗ - Đang đợi thanh toán</span>
             </div>
 
             <div className="flex items-center space-x-1">

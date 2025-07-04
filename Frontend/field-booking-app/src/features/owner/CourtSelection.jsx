@@ -24,13 +24,15 @@ import AddCourtForm from "./AddCourtForm"
 import { useAuth } from "../../context/AuthContext"
 import { getField, getBookingToday } from "../../api/submission"
 import { useNavigate } from "react-router-dom"
-
+import CourtSettingsModal from "./CourtSettingModel"
 export default function CourtSelection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedFilter, setSelectedFilter] = useState("all")
   const { logout, user, isAuthenticated, loading } = useAuth()
   const [courts, setCourts] = useState([])
   const [showAddForm , setShowAddForm] = useState(false)
+  const [showSettingsModal , setShowSettingsModal] = useState(false)
+  const [selectedCourt , setSelectedCourt] = useState(null)
   const [totalBookings, setTotalBookings] = useState({ totalBooking: 45 })
   const navigate = useNavigate()
 
@@ -101,11 +103,21 @@ export default function CourtSelection() {
   const handleCourtSelect = (slug) => {
     navigate(`/san/${slug}/owner`)
   }
+  const handleSettingsClick = (court) => {
+    setSelectedCourt(court)
+    setShowSettingsModal(true)
+  }
 
+  const handleSaveSettings = (updatedData) => {
+    setCourts((prev) => prev.map((court) => (court.id === selectedCourt.id ? {...court , ...updatedData} : court)))
+    setShowSettingsModal(false)
+    setSelectedCourt(null)
+    console.log("Settings saved:" , updatedData)
+  }
   const activeCourts = courts.filter((court) => court.status === "active").length
   const totalRevenue = courts.reduce((sum, court) => sum + (court.totalRevenue || 0), 0)
 
-  return (
+  return ( 
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-white/20 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -329,7 +341,9 @@ export default function CourtSelection() {
                   </button>
 
                   {court.status === "active" && (
-                    <button className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
+                    <button 
+                    onClick={() => handleSettingsClick(court)}
+                    className="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors">
                       <Settings className="w-4 h-4" />
                     </button>
                   )}
@@ -338,8 +352,7 @@ export default function CourtSelection() {
             </div>
           ))}
         </div>
-
-        {/* Enhanced Empty State */}
+        
         {filteredCourts.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -357,6 +370,15 @@ export default function CourtSelection() {
           </div>
         )}
       </div>
+      <CourtSettingsModal 
+        court ={selectedCourt}
+        isOpen={showSettingsModal}
+        onClose={() => {
+          setShowSettingsModal(false)
+          setSelectedCourt(null)
+        }}
+        onSave={handleSaveSettings}
+      />
     </div>
   )
 }

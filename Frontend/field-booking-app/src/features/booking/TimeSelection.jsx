@@ -293,13 +293,14 @@ export default function TimeSelection({ nextStep = () => alert("Next step!") }) 
                       </td>
                       {visibleTimeSlots.map((slot) => {
                         const slotStatus = bookedSlots[subField.name]?.[slot]
-                        const isPaid = slotStatus === "paid" || slotStatus === "unpaid"
+                        const isPaid = slotStatus === "paid"
+                        const isUnpaid = slotStatus === "unpaid"
                         const isConfirmed = slotStatus === "confirmed_deposit" || slotStatus === "confirmed_paid"
-                        const isBooked = isPaid || isConfirmed
+                        const isBooked = isPaid || isConfirmed || isUnpaid
                         const isUnavailable = subField.status !== "active" 
                         const isPast = selectedDate && isPastTime(selectedDate, slot)
                         const isSelected = isCellSelected(subField.name, slot)
-                        const isDisabled = isUnavailable || isBooked || isPast
+                        const isDisabled = isUnavailable || isBooked || isPast 
                         const isPeak = isPeakHour(slot)
 
                         let cellClass = "h-12 w-full border border-gray-200 relative transition-all duration-200"
@@ -309,8 +310,13 @@ export default function TimeSelection({ nextStep = () => alert("Next step!") }) 
                         } else if (isConfirmed) {
                           cellClass += " bg-gradient-to-br from-red-500 to-red-600"
                         } else if (isPaid) {
+                          cellClass += " bg-gradient-to-br from-orange-400 to-orange-500"
+                        } 
+                        else if (isUnpaid)
+                        {
                           cellClass += " bg-gradient-to-br from-yellow-400 to-yellow-500"
-                        } else if (isSelected) {
+                        }
+                        else if (isSelected) {
                           cellClass += " bg-gradient-to-br from-blue-400 to-blue-500 border-2 border-blue-600 shadow-md"
                         } else if (isPast) {
                           cellClass += " bg-gray-200"

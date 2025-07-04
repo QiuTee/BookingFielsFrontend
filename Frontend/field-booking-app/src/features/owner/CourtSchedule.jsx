@@ -8,14 +8,10 @@ import {
   Calendar,
   User,
   Filter,
-  MoreHorizontal,
-  Download,
-  Printer,
   RefreshCw,
   CheckCircle2,
   Clock3,
   DollarSign,
-  BarChart3,
 } from "lucide-react"
 import { getBookedSlots , getFieldBySlug } from "../../api/submission"
 import { useParams } from "react-router-dom"
@@ -228,7 +224,6 @@ export default function CourtSchedule() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-[1400px] mx-auto p-4 lg:p-6">
-        {/* Header */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
           <div className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
@@ -239,34 +234,8 @@ export default function CourtSchedule() {
               <p className="text-gray-500 mt-1">Quản lý lịch đặt sân và theo dõi trạng thái đặt sân</p>
             </div>
 
-            <div className="flex items-center gap-3 self-end md:self-auto">
-              <button
-                onClick={() => setShowStats(!showStats)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-              >
-                <BarChart3 className="h-4 w-4 text-blue-600" />
-                <span>{showStats ? "Ẩn thống kê" : "Xem thống kê"}</span>
-              </button>
-
-              <div className="relative group">
-                <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
-                  <MoreHorizontal className="h-5 w-5 text-gray-600" />
-                </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden group-hover:block z-10">
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    <span>Xuất Excel</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
-                    <Printer className="h-4 w-4" />
-                    <span>In lịch</span>
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Stats Panel */}
           {showStats && (
             <div className="px-6 pb-6 pt-2 border-t border-gray-100">
               <h3 className="text-sm font-medium text-gray-500 mb-3">
@@ -348,9 +317,7 @@ export default function CourtSchedule() {
           )}
         </div>
 
-        {/* Schedule */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" ref={scheduleRef}>
-          {/* Schedule Header */}
           <div className="p-4 md:p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center space-x-2">
