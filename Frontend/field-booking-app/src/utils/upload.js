@@ -42,3 +42,24 @@ export const uploadFieldImage = async (file , fieldId) => {
 
   return publicUrlData.publicUrl;
 }
+
+export const uploadProductImage = async (file, productId) => {
+  const fileExt = file.name.split('.').pop();
+  const filePath = `product-image/${productId}_${Date.now()}.${fileExt}`;
+
+  const {data, error} = await supabase.storage
+    .from('product-image')
+    .upload(filePath, file);
+
+  if (error) {
+    console.error("Upload failed:", error.message);
+    throw error;
+  }
+
+  const { data: publicUrlData } = supabase
+    .storage
+    .from('product-image')
+    .getPublicUrl(filePath);
+
+  return publicUrlData.publicUrl;
+}

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState , useEffect } from "react"
 import {
   Coffee,
   Utensils,
@@ -16,7 +16,7 @@ import {
   Calendar,
   Home,
 } from "lucide-react"
-
+import { getProducts } from "../../api/submission"
 import PosBookingSystem from "./PosBookingSystem"
 
 
@@ -28,7 +28,7 @@ export default function PosSystem() {
   const [searchTerm, setSearchTerm] = useState("")
   const [activeCategory, setActiveCategory] = useState("all")
   const [currentView, setCurrentView] = useState("pos")
-
+  const [menuItems , setMenuItems] = useState([])
   const tables = [
     { id: "A1", name: "Sân A1", status: "occupied", customers: 4 },
     { id: "A2", name: "Sân A2", status: "available", customers: 0 },
@@ -38,98 +38,18 @@ export default function PosSystem() {
     { id: "C2", name: "Sân C2", status: "available", customers: 0 },
   ]
 
-  const menuItems= [
-    {
-      id: "1",
-      name: "Cà phê đen",
-      price: 25000,
-      category: "drinks",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Cà phê đen truyền thống",
-      available: true,
-    },
-    {
-      id: "2",
-      name: "Cà phê sữa",
-      price: 30000,
-      category: "drinks",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Cà phê sữa đá thơm ngon",
-      available: true,
-    },
-    {
-      id: "3",
-      name: "Nước cam tươi",
-      price: 35000,
-      category: "drinks",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Nước cam tươi vắt 100%",
-      available: true,
-    },
-    {
-      id: "4",
-      name: "Trà đá",
-      price: 15000,
-      category: "drinks",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Trà đá mát lạnh",
-      available: true,
-    },
-    {
-      id: "5",
-      name: "Bánh mì thịt nướng",
-      price: 45000,
-      category: "food",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Bánh mì thịt nướng đặc biệt",
-      available: true,
-    },
-    {
-      id: "6",
-      name: "Cơm tấm sườn",
-      price: 65000,
-      category: "food",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Cơm tấm sườn nướng truyền thống",
-      available: true,
-    },
-    {
-      id: "7",
-      name: "Phở bò",
-      price: 55000,
-      category: "food",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Phở bò tái chín đậm đà",
-      available: true,
-    },
-    {
-      id: "8",
-      name: "Gỏi cuốn tôm thịt",
-      price: 40000,
-      category: "food",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Gỏi cuốn tôm thịt tươi ngon",
-      available: true,
-    },
-    {
-      id: "9",
-      name: "Kem vanilla",
-      price: 25000,
-      category: "dessert",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Kem vanilla mát lạnh",
-      available: true,
-    },
-    {
-      id: "10",
-      name: "Bánh flan",
-      price: 20000,
-      category: "dessert",
-      image: "/placeholder.svg?height=100&width=100",
-      description: "Bánh flan caramel thơm ngon",
-      available: true,
-    },
-  ]
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const data = await getProducts()
+        setMenuItems(data)
+        console.log("Lấy sản phẩm thành công" , data)
+      }catch (error) {
+        console.error("Lấy sản phẩm thất bại", error)
+      }
+    }
+    fetchMenuItems()
+  },[])
 
   const categories = [
     { id: "all", name: "Tất cả", icon: Utensils },
@@ -333,7 +253,7 @@ export default function PosSystem() {
                   >
                     <div className="p-4">
                       <img
-                        src={item.image || "/placeholder.svg"}
+                        src={item.imageUrl || "/placeholder.svg"}
                         alt={item.name}
                         className="w-full h-24 object-cover rounded-md mb-3"
                       />

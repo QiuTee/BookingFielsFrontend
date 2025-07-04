@@ -258,3 +258,14 @@ export const getAllFields = async () => {
     throw error;
   }
 };
+
+export const getProducts = async () => { 
+  try {
+    const axiosInstance = getAxiosInstance();
+    const response = await axiosInstance.get("/ProductInf/getAll")
+    return response.data;
+  }catch (error){
+    console.error("Lấy sản phẩm thất bại:" , error);
+    throw error;
+  }
+}
